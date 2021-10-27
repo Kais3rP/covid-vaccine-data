@@ -1,4 +1,5 @@
 import { Box, Container, Grid, Typography } from '@mui/material'
+import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import Map from '../italymap/Map'
 import Graph from './Graph'
@@ -9,13 +10,16 @@ import TextGraph from './TextGraph'
 const RegionsData = () => {
   let { data: summaryData, isLoading: summaryIsLoading } = useSummaryData()
   const currentRegion = useSelector((state) => state.map.region)
+  summaryData = useMemo(() => {
+    return currentRegion
+      ? {
+          columns: summaryData.columns,
+          rows: summaryData.rows.filter((el) => el.region === currentRegion),
+        }
+      : summaryData
+  }, [currentRegion])
   console.log('REGION', currentRegion, 'SUMMARY', summaryData)
-  summaryData = currentRegion
-    ? {
-        columns: summaryData.columns,
-        rows: summaryData.rows.filter((el) => el.region === currentRegion),
-      }
-    : summaryData
+
   return summaryIsLoading ? (
     'Loading...'
   ) : (
@@ -27,7 +31,13 @@ const RegionsData = () => {
       </Grid>
       <Grid item xs={12} md={6}>
         {' '}
-        <Map />
+        <Map
+          data={
+            currentRegion
+              ? summaryData?.rows[0].administered
+              : summaryData?.rows[summaryData.rows.length - 1].administered
+          }
+        />
       </Grid>
       {/* {currentRegion && (
         <Grid

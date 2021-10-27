@@ -90,13 +90,33 @@ export const useSummaryData = () => {
     if (!data) return
     else
       return {
-        rows: data.data.map((el) => ({
-          id: el.index,
-          region: el.nome_area,
-          administered: el.dosi_consegnate,
-          delivered: el.dosi_somministrate,
-          percentage: el.percentuale_somministrazione,
-        })),
+        rows: [
+          ...data.data.map((el) => ({
+            id: el.index,
+            region: el.nome_area,
+            administered: el.dosi_consegnate.toLocaleString('en-US'),
+            delivered: el.dosi_somministrate.toLocaleString('en-US'),
+            percentage: el.percentuale_somministrazione+"%",
+          })),
+          {
+            id: 'total',
+            region: 'Total',
+            administered: data.data
+              .reduce((acc, curr) => acc + curr.dosi_somministrate, 0)
+              .toLocaleString('en-US'),
+            delivered: data.data
+              .reduce((acc, curr) => acc + curr.dosi_consegnate, 0)
+              .toLocaleString('en-US'),
+            percentage: (
+              data.data.reduce(
+                (acc, curr) => acc + curr.percentuale_somministrazione,
+                0,
+              ) / 21
+            )
+              .toFixed(1)
+              +"%",
+          },
+        ],
         columns: [
           {
             field: 'region',
@@ -119,7 +139,6 @@ export const useSummaryData = () => {
             headerClassName: 'grid-header',
           },
         ],
-       
       }
   }, [data])
   return {
