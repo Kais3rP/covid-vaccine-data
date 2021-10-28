@@ -1,7 +1,6 @@
 import { Box, Container, Grid, Slider, Typography } from '@mui/material'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import * as d3 from 'd3'
+import debounce from 'lodash.debounce'
 import { useAdministeredData } from './hooks'
 import Zoom from '@mui/material/Zoom'
 
@@ -86,8 +85,8 @@ const Graph = () => {
   /*   const yScale = d3.scaleLinear().domain(data.map(el => el.)).range([0-500])
    */
 
-  console.log('WEEKLY GRAPH', data)
-  const margin = (width - data?.data?.length * (barWidth + 2)) / 2 - 4
+  /*   console.log('WEEKLY GRAPH', data)
+   */ const margin = (width - data?.data?.length * (barWidth + 2)) / 2 - 4
   return isLoading ? (
     'Loading...'
   ) : (
@@ -218,13 +217,14 @@ const Graph = () => {
           data={data?.data}
           containerWidth={width}
           containerHeight={height}
+          zoom={zoom}
         />
       </svg>
       <Container>
         <Slider
           getAriaLabel={() => 'Zoom range'}
           value={barWidth}
-          onChange={(e, val) => setZoom(val)}
+          onChange={debounce((e, val) => setZoom(val), 2)}
           valueLabelDisplay="auto"
           getAriaValueText={(val) => val}
         />
@@ -234,8 +234,8 @@ const Graph = () => {
 }
 
 const BarTooltip = ({ data }) => {
-  console.log('TOOLTIP DATA', data)
-  return (
+  /*   console.log('TOOLTIP DATA', data)
+   */ return (
     <>
       {' '}
       <Typography color="inherit">{data.data.brand}</Typography>

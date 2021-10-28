@@ -27,8 +27,8 @@ export const useAnagraphicData = () => {
 
 export const useAdministeredSummaryData = () => {
   const { data, isLoading, isSuccess } = useGetAdministeredSummaryQuery()
-  console.log(' ADMINISTRATIONS SUMMARY ', data)
-  const firstDoseTotal = useMemo(() => {
+  /*   console.log(' ADMINISTRATIONS SUMMARY ', data)
+   */ const firstDoseTotal = useMemo(() => {
     return data?.data.reduce((acc, curr) => acc + curr.prima_dose, 0)
   }, [data])
   const firstDosePlusNaturalImmunity = useMemo(() => {
@@ -85,8 +85,8 @@ export const useAdministeredSummaryData = () => {
 
 export const useAdministeredData = () => {
   const { data, isLoading, isSuccess } = useGetAdministeredQuery()
-  console.log('ADMINISTRATIONS', data)
-  const brands = [
+  /*   console.log('ADMINISTRATIONS', data)
+   */ const brands = [
     'Pfizer/BioNTech',
     'Moderna',
     'Vaxzevria (AstraZeneca)',
@@ -125,8 +125,8 @@ export const useAdministeredData = () => {
       )
     )
   }, [data])
-  console.log('COMPUTED DATA', computedData)
-  return {
+  /*   console.log('COMPUTED DATA', computedData)
+   */ return {
     data: {
       data: computedData,
       brands,
@@ -140,8 +140,8 @@ export const useSummaryData = () => {
   let { data, isLoading, isSuccess } = useGetSummaryQuery()
 
   // ADD EXTRA PROPS VALUES TO THE REGIONS OBJECT
-  console.log('SUMMARY DATA   ', data)
-
+  /*   console.log('SUMMARY DATA   ', data)
+   */
   data = useMemo(() => {
     if (!data) return
     else

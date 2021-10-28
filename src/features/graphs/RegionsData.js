@@ -20,8 +20,8 @@ const RegionsData = () => {
         }
       : summaryData
   }, [currentRegion, summaryData])
-  console.log('REGION', currentRegion, 'SUMMARY', summaryData)
-
+  /*   console.log('REGION', currentRegion, 'SUMMARY', summaryData)
+   */
   return summaryIsLoading || !summaryIsSuccess ? (
     'Loading...'
   ) : (
