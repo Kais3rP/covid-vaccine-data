@@ -1,10 +1,12 @@
 import {
+  useGetAdministeredQuery,
   useGetAdministeredSummaryQuery,
   useGetAnagraphicDataQuery,
   useGetSummaryQuery,
 } from '../../../services'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 import { useMemo } from 'react'
+import { sumObjectsByKey } from '../../../utils'
 
 const yesterday = new Date()
 yesterday.setDate(yesterday.getDate() - 1)
@@ -23,8 +25,9 @@ export const useAnagraphicData = () => {
   }
 }
 
-export const useAdministeredData = () => {
+export const useAdministeredSummaryData = () => {
   const { data, isLoading, isSuccess } = useGetAdministeredSummaryQuery()
+  console.log(' ADMINISTRATIONS SUMMARY ', data)
   const firstDoseTotal = useMemo(() => {
     return data?.data.reduce((acc, curr) => acc + curr.prima_dose, 0)
   }, [data])
@@ -80,11 +83,64 @@ export const useAdministeredData = () => {
   }
 }
 
+export const useAdministeredData = () => {
+  const { data, isLoading, isSuccess } = useGetAdministeredQuery()
+  console.log('ADMINISTRATIONS', data)
+  const brands = [
+    'Pfizer/BioNTech',
+    'Moderna',
+    'Vaxzevria (AstraZeneca)',
+    'Janssen',
+  ]
+  const computedData = useMemo(() => {
+    const defaultObj = {
+      'Pfizer/BioNTech': 0,
+      Moderna: 0,
+      'Vaxzevria (AstraZeneca)': 0,
+      Janssen: 0,
+    }
+    let prevDate
+    return (
+      data &&
+      Object.entries(
+        Object.entries(
+          data.data.reduce((obj, el) => {
+            if (obj[el.data_somministrazione])
+              obj[el.data_somministrazione][el.fornitore] +=
+                el.prima_dose + el.seconda_dose
+            else {
+              const newObj = { ...defaultObj }
+              newObj[el.fornitore] = el.prima_dose + el.seconda_dose
+              obj[el.data_somministrazione] = newObj
+            }
+            return obj
+          }, {}),
+        ).reduce((obj, el, i) => {
+          if (i === 0 || i % 7 === 0) {
+            obj[el[0]] = el[1]
+            prevDate = el[0]
+          } else obj[prevDate] = sumObjectsByKey(obj[prevDate], el[1])
+          return obj
+        }, {}),
+      )
+    )
+  }, [data])
+  console.log('COMPUTED DATA', computedData)
+  return {
+    data: {
+      data: computedData,
+      brands,
+    },
+    isLoading,
+    isSuccess,
+  }
+}
+
 export const useSummaryData = () => {
   let { data, isLoading, isSuccess } = useGetSummaryQuery()
 
   // ADD EXTRA PROPS VALUES TO THE REGIONS OBJECT
-  console.log(' REGIONS ', data)
+  console.log('SUMMARY DATA   ', data)
 
   data = useMemo(() => {
     if (!data) return
@@ -96,7 +152,7 @@ export const useSummaryData = () => {
             region: el.nome_area,
             administered: el.dosi_consegnate.toLocaleString('en-US'),
             delivered: el.dosi_somministrate.toLocaleString('en-US'),
-            percentage: el.percentuale_somministrazione+"%",
+            percentage: el.percentuale_somministrazione + '%',
           })),
           {
             id: 'total',
@@ -107,14 +163,13 @@ export const useSummaryData = () => {
             delivered: data.data
               .reduce((acc, curr) => acc + curr.dosi_consegnate, 0)
               .toLocaleString('en-US'),
-            percentage: (
-              data.data.reduce(
-                (acc, curr) => acc + curr.percentuale_somministrazione,
-                0,
-              ) / 21
-            )
-              .toFixed(1)
-              +"%",
+            percentage:
+              (
+                data.data.reduce(
+                  (acc, curr) => acc + curr.percentuale_somministrazione,
+                  0,
+                ) / 21
+              ).toFixed(1) + '%',
           },
         ],
         columns: [

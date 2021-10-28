@@ -17,12 +17,16 @@ export const covidApi = createApi({
     getAdministeredSummary: builder.query({
       query: (name) => `somministrazioni-vaccini-summary-latest.json`,
     }),
+    getAdministered: builder.query({
+      query: (name) => `somministrazioni-vaccini-latest.json`,
+    }),
   }),
 })
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
 export const {
+  useGetAdministeredQuery,
   useGetAdministeredSummaryQuery,
   useGetSummaryQuery,
   useGetAnagraphicDataQuery,

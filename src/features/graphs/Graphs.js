@@ -2,70 +2,17 @@ import { Box, Container, Grid, Typography } from '@mui/material'
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import Map from '../italymap/Map'
-import Graph from './Graph'
-import { useAdministeredData, useAnagraphicData, useSummaryData } from './hooks'
-import List from './List'
+import { useAdministeredSummaryData } from './hooks'
+
+import RegionsData from './RegionsData'
 import TextGraph from './TextGraph'
-
-const RegionsData = () => {
-  let { data: summaryData, isLoading: summaryIsLoading } = useSummaryData()
-  const currentRegion = useSelector((state) => state.map.region)
-  summaryData = useMemo(() => {
-    return currentRegion
-      ? {
-          columns: summaryData.columns,
-          rows: summaryData.rows.filter((el) => el.region === currentRegion),
-        }
-      : summaryData
-  }, [currentRegion])
-  console.log('REGION', currentRegion, 'SUMMARY', summaryData)
-
-  return summaryIsLoading ? (
-    'Loading...'
-  ) : (
-    <Grid container sx={{ mt: 3, display: 'flex' }}>
-      {' '}
-      <Grid item xs={12} md={6}>
-        {' '}
-        <List data={summaryData} />
-      </Grid>
-      <Grid item xs={12} md={6}>
-        {' '}
-        <Map
-          data={
-            currentRegion
-              ? summaryData?.rows[0].administered
-              : summaryData?.rows[summaryData.rows.length - 1].administered
-          }
-        />
-      </Grid>
-      {/* {currentRegion && (
-        <Grid
-          sx={{
-            position: 'fixed',
-            top: '5vh',
-            left: '5vw',
-            width: '90vw',
-            height: '90vh',
-            backgroundColor: 'primary.main',
-            color: 'secondary.main',
-            borderRadius: '7px',
-            boxShadow: 'main',
-          }}
-          item
-        >
-          {<List data={{ ...summaryData }} />}
-        </Grid> */}
-      )}
-    </Grid>
-  )
-}
+import WeeklyGraph from './WeeklyGraph'
 
 const Graphs = () => {
-  const {
+  /*   const {
     data: anagraphicData,
     isLoading: anagraphicIsLoading,
-  } = useAnagraphicData()
+  } = useAnagraphicData() */
 
   return (
     <Box>
@@ -75,12 +22,12 @@ const Graphs = () => {
         Comp2={TotalTwoDoses}
       />
       <TextGraph
-        title="Totale somministrazioni"
+        title="Dosi addizionali"
         Comp1={TotalAdditional}
         Comp2={TotalBooster}
       />
       <RegionsData />
-
+      <WeeklyGraph />
       {/* {anagraphicIsLoading
         ? 'Loading...'
         : Object.entries(anagraphicData).map((data) => (
@@ -93,7 +40,7 @@ const Graphs = () => {
 export default Graphs
 
 const TotalOneDose = () => {
-  const { data, isLoading } = useAdministeredData()
+  const { data, isLoading } = useAdministeredSummaryData()
   return isLoading ? (
     'Loading...'
   ) : (
@@ -103,7 +50,7 @@ const TotalOneDose = () => {
         {' '}
         1 dose
       </Typography>
-      <Typography variant="h4"> {data.additionalDose.total}</Typography>
+      <Typography variant="h4"> {data.firstDose.total}</Typography>
       <Typography>
         Total plus natural immunity: {data.firstDose.totalPlusNatural}
       </Typography>
@@ -116,7 +63,7 @@ const TotalOneDose = () => {
 }
 
 const TotalTwoDoses = () => {
-  const { data, isLoading } = useAdministeredData()
+  const { data, isLoading } = useAdministeredSummaryData()
   return isLoading ? (
     'Loading...'
   ) : (
@@ -139,7 +86,7 @@ const TotalTwoDoses = () => {
 }
 
 const TotalAdditional = () => {
-  const { data, isLoading } = useAdministeredData()
+  const { data, isLoading } = useAdministeredSummaryData()
   return isLoading ? (
     'Loading...'
   ) : (
@@ -154,7 +101,7 @@ const TotalAdditional = () => {
 }
 
 const TotalBooster = () => {
-  const { data, isLoading } = useAdministeredData()
+  const { data, isLoading } = useAdministeredSummaryData()
   return isLoading ? (
     'Loading...'
   ) : (

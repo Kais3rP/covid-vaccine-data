@@ -31,3 +31,8 @@
   fill: red;
   cursor: pointer;
 }
+
+.bar:hover {
+  fill: #78909c;
+  cursor: pointer;
+}

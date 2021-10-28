@@ -30,8 +30,12 @@ const Map = ({ data }) => {
         ))}
         ;
       </svg>
-      <Typography>{data}</Typography>
-      <Typography>Total administrations</Typography>
+      <Typography align={'center'} color={'text.secondary'} variant={'h3'}>
+        {data}
+      </Typography>
+      <Typography align={'center'} color={'text.secondary'} variant={'h5'}>
+        Total administrations
+      </Typography>
     </Box>
   )
 }

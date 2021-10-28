@@ -1,5 +1,5 @@
 import React from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setCurrentRegion } from './map.slice'
 
 const Region = ({ id, d, transform }) => {
@@ -8,6 +8,8 @@ const Region = ({ id, d, transform }) => {
     dispatch(setCurrentRegion(id))
     e.stopPropagation()
   }
+  const currentRegion = useSelector((state) => state.map.region)
+
   return (
     <g onClick={onClick}>
       <path
@@ -15,7 +17,7 @@ const Region = ({ id, d, transform }) => {
         id={id}
         d={d}
         transform={transform}
-        fill={'#005b96'}
+        fill={currentRegion === id ? '#F00' : '#005b96'}
       />
       <title>{id}</title>
     </g>
