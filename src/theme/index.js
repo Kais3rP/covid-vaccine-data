@@ -29,7 +29,7 @@ export const theme = createTheme({
       main: '#000',
     },
   },
-  shadows: { main: '0px 0px 2px 2px #AAA' },
+  shadows: { main: '0px 0px 2px 2px #AAA', 4: '0px 0px 2px 2px #AAA' },
   components: {
     MuiButton: {
       styleOverrides: {

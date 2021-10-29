@@ -17,14 +17,14 @@ const TextGraph = ({ Comp1, Comp2, title }) => {
           alignItems: 'flex-end',
         }}
       >
-        <Typography color="primary" variant="h5" sx={{mb:3}}>
+        <Typography color="primary" variant="h5" sx={{ mb: 3 }}>
           {title}
         </Typography>
       </Container>
-      <Container
+      <Grid
+        container
         sx={{
           p: 4,
-          width: '100%',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'flex-end',
@@ -33,7 +33,7 @@ const TextGraph = ({ Comp1, Comp2, title }) => {
         }}
       >
         <Grid
-          container
+          item
           xs={12}
           md={6}
           sx={{
@@ -56,7 +56,7 @@ const TextGraph = ({ Comp1, Comp2, title }) => {
           {Comp1 && <Comp1 />}
         </Grid>
         <Grid
-          container
+          item
           xs={12}
           md={6}
           sx={{
@@ -80,7 +80,7 @@ const TextGraph = ({ Comp1, Comp2, title }) => {
           )}
           {Comp2 && <Comp2 />}
         </Grid>
-      </Container>
+      </Grid>
     </Box>
   )
 }

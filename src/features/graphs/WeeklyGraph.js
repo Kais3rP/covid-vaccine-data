@@ -11,6 +11,18 @@ import { useWidth } from '../../hooks'
 import { format } from 'date-fns'
 import HtmlTooltip from '../../components/reusable/HtmlTooltip'
 
+const barColors = ['#263238', '#546e7a', '#90a4ae', '#eceff1', '#78909c']
+const brands = [
+  'Pfizer/BioNTech',
+  'Moderna',
+  'Vaxzevria (AstraZeneca)',
+  'Janssen',
+]
+const legendData = brands.reduce((obj, el, i) => {
+  obj[el] = barColors[i]
+  return obj
+}, {})
+
 const WeeklyGraph = () => {
   return (
     <Box>
@@ -36,6 +48,7 @@ const WeeklyGraph = () => {
         <Grid item xs={12} md={3}>
           <Box sx={{ m: 2 }}>
             <Badge src={people} alt="people" width={10} />
+            <Legend data={legendData} />
           </Box>
         </Grid>
         <Grid
@@ -72,29 +85,32 @@ export default WeeklyGraph
 
 const Graph = () => {
   const { width, ref } = useWidth()
-  const [zoom, setZoom] = useState(8)
+  const [zoom, setZoom] = useState([0, 100])
+  const [isZoomingLeft, setIsZoomingLeft] = useState(false)
+  const _zoom = 100 - (zoom[1] - zoom[0])
   const barWidth = 8
   const height = 500
   const barMargin = 52
-  const barColors = ['#263238', '#546e7a', '#90a4ae', '#eceff1', '#78909c']
-  const {
-    data,
-    isLoading,
-  } = useAdministeredData() /* console.log('SCALE', xScale) */
-
-  /*   const yScale = d3.scaleLinear().domain(data.map(el => el.)).range([0-500])
-   */
-
-  /*   console.log('WEEKLY GRAPH', data)
-   */ const margin = (width - data?.data?.length * (barWidth + 2)) / 2 - 4
+  const leftCounterMargin = -(_zoom * 43)
+  const { data, isLoading } = useAdministeredData()
+  console.log('WEEKLY', data)
+  const margin = (width - data?.data?.length * (barWidth + 2)) / 2 - 4
   return isLoading ? (
     'Loading...'
   ) : (
     <Box sx={{ position: 'relative' }}>
-      <svg width="100%" height={height} ref={ref}>
+      <svg
+        width="100%"
+        height={height}
+        ref={ref}
+        id="week-graph"
+        data-name="week-graph"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox={'0 120 680 350'}
+      >
         <g transform={`translate(${margin} 0)`}>
-          {data?.data.map((el, i) => (
-            <>
+          {data?.data.map((el, i) =>
+            data.brands.map((brand, j) => (
               <HtmlTooltip
                 TransitionComponent={Zoom}
                 followCursor={true}
@@ -103,8 +119,8 @@ const Graph = () => {
                     data={{
                       dateRange: formatRange(el[0]),
                       data: {
-                        brand: data.brands[0],
-                        value: el[1][data.brands[0]],
+                        brand: data.brands[j],
+                        value: el[1][data.brands[j]],
                       },
                     }}
                   />
@@ -112,121 +128,41 @@ const Graph = () => {
               >
                 <rect
                   className="bar"
-                  width={barWidth + zoom}
-                  height={formatData(el[1][data.brands[0]])}
-                  fill={barColors[0]}
-                  x={i * (barWidth + 2 + zoom)}
-                  y={height - barMargin - formatData(el[1][data.brands[0]])}
-                />
-              </HtmlTooltip>
-              <HtmlTooltip
-                TransitionComponent={Zoom}
-                followCursor={true}
-                title={
-                  <BarTooltip
-                    data={{
-                      dateRange: formatRange(el[0]),
-                      data: {
-                        brand: data.brands[1],
-                        value: el[1][data.brands[1]],
-                      },
-                    }}
-                  />
-                }
-              >
-                <rect
-                  className="bar"
-                  width={barWidth + zoom}
-                  height={formatData(el[1][data.brands[1]])}
-                  fill={barColors[1]}
-                  x={i * (barWidth + 2 + zoom)}
-                  y={
-                    height -
-                    barMargin -
-                    (formatData(el[1][data.brands[0]]) +
-                      formatData(el[1][data.brands[1]]))
+                  width={barWidth + _zoom}
+                  height={formatData(el[1][data.brands[j]])}
+                  fill={barColors[j]}
+                  x={
+                    isZoomingLeft
+                      ? leftCounterMargin + i * (barWidth + 2 + _zoom)
+                      : i * (barWidth + 2 + _zoom)
                   }
+                  y={height - barMargin - formatData(el[1][data.brands[j]])}
                 />
               </HtmlTooltip>
-              <HtmlTooltip
-                TransitionComponent={Zoom}
-                followCursor={true}
-                title={
-                  <BarTooltip
-                    data={{
-                      dateRange: formatRange(el[0]),
-                      data: {
-                        brand: data.brands[2],
-                        value: el[1][data.brands[2]],
-                      },
-                    }}
-                  />
-                }
-              >
-                <rect
-                  className="bar"
-                  width={barWidth + zoom}
-                  height={formatData(el[1][data.brands[2]])}
-                  fill={barColors[2]}
-                  x={i * (barWidth + 2 + zoom)}
-                  y={
-                    height -
-                    barMargin -
-                    (formatData(el[1][data.brands[0]]) +
-                      formatData(el[1][data.brands[1]]) +
-                      formatData(el[1][data.brands[2]]))
-                  }
-                />
-              </HtmlTooltip>
-              <HtmlTooltip
-                TransitionComponent={Zoom}
-                followCursor={true}
-                title={
-                  <BarTooltip
-                    data={{
-                      dateRange: formatRange(el[0]),
-                      data: {
-                        brand: data.brands[3],
-                        value: el[1][data.brands[3]],
-                      },
-                    }}
-                  />
-                }
-              >
-                <rect
-                  className="bar"
-                  width={barWidth + zoom}
-                  height={formatData(el[1][data.brands[3]])}
-                  fill={barColors[3]}
-                  x={i * (barWidth + 2 + zoom)}
-                  y={
-                    height -
-                    barMargin -
-                    (formatData(el[1][data.brands[0]]) +
-                      formatData(el[1][data.brands[1]]) +
-                      formatData(el[1][data.brands[2]]) +
-                      formatData(el[1][data.brands[3]]))
-                  }
-                />
-              </HtmlTooltip>
-            </>
-          ))}
+            )),
+          )}
         </g>
 
         <Axis
           data={data?.data}
           containerWidth={width}
           containerHeight={height}
-          zoom={zoom}
+          zoom={_zoom}
+          isZoomingLeft={isZoomingLeft}
+          leftCounterMargin={leftCounterMargin}
         />
       </svg>
       <Container>
         <Slider
           getAriaLabel={() => 'Zoom range'}
-          value={barWidth}
-          onChange={debounce((e, val) => setZoom(val), 2)}
+          value={zoom}
+          onChange={debounce((e, val, active) => {
+            setIsZoomingLeft(active === 1)
+            setZoom(val)
+          }, 2)}
           valueLabelDisplay="auto"
           getAriaValueText={(val) => val}
+          color="secondary"
         />
       </Container>
     </Box>
@@ -247,6 +183,29 @@ const BarTooltip = ({ data }) => {
         'dd/MM',
       )} to ${format(new Date(data?.dateRange[1]), 'dd/MM')}`}</Typography>
     </>
+  )
+}
+
+const Legend = ({ data }) => {
+  console.log('LEGEND', Object.entries(data))
+  return (
+    <Box sx={{ mt: 3 }}>
+      {Object.entries(data).map((el) => (
+        <Box key={el[0]} sx={{ display: 'flex', mb: 1 }}>
+          <Box
+            sx={{
+              mr: 2,
+              width: '30px',
+              height: '30px',
+              borderRadius: '50%',
+              backgroundColor: el[1],
+            }}
+          />
+
+          <Typography variant="h7">{el[0]}</Typography>
+        </Box>
+      ))}
+    </Box>
   )
 }
 

@@ -8,12 +8,10 @@ import Graphs from './features/graphs/Graphs'
 import Hero from './components/hero/Hero'
 
 const App = () => {
-  const dispatch = useDispatch()
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Layout onClick={() => dispatch(setCurrentRegion(null))}>
+      <Layout>
         <Hero />
         <Graphs />
       </Layout>

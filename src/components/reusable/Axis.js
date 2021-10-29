@@ -34,16 +34,25 @@ export const ScaleAxis = ({ data }) => {
   )
 }
 
-export const Axis = ({ data, containerWidth, containerHeight, zoom }) => {
+export const Axis = ({
+  data,
+  containerWidth,
+  containerHeight,
+  zoom,
+  isZoomingLeft,
+  leftCounterMargin,
+}) => {
   /*   console.log('AXIS DATA', data)
    */ const tickWidth = 10
   const ticksNumber = data.length
   const ticks = useMemo(() => {
     return data.map((el, i) => ({
       value: format(new Date(el[0]), 'dd/MM'),
-      xOffset: i * (10 + zoom) + zoom/2,
+      xOffset: isZoomingLeft
+        ? leftCounterMargin + i * (10 + zoom) + zoom / 2
+        : i * (10 + zoom) + zoom / 2,
     }))
-  }, [data, zoom])
+  }, [data, zoom, isZoomingLeft])
 
   const margin = (containerWidth - tickWidth * ticksNumber) / 2
 

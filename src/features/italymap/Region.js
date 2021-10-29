@@ -1,7 +1,6 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setCurrentRegion } from './map.slice'
-
 const Region = ({ id, d, transform }) => {
   const dispatch = useDispatch()
   const onClick = (e) => {
@@ -9,9 +8,13 @@ const Region = ({ id, d, transform }) => {
     e.stopPropagation()
   }
   const currentRegion = useSelector((state) => state.map.region)
-
   return (
-    <g onClick={onClick}>
+    <g
+      style={{ outline: 'none' }}
+      tabIndex="0"
+      onClick={onClick}
+      onBlur={() => dispatch(setCurrentRegion(null))}
+    >
       <path
         className="region"
         id={id}
