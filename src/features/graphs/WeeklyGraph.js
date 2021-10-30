@@ -3,15 +3,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import debounce from 'lodash.debounce'
 import { useAdministeredData } from './hooks'
 import Zoom from '@mui/material/Zoom'
-
+import Header from '../../components/reusable/Header'
 import people from '../../img/group_person.svg'
 import { Badge } from '../../components/reusable/Badge'
 import { Axis } from '../../components/reusable/Axis'
 import { useWidth } from '../../hooks'
 import { format } from 'date-fns'
 import HtmlTooltip from '../../components/reusable/HtmlTooltip'
+import { barColors } from '../../data'
 
-const barColors = ['#263238', '#546e7a', '#90a4ae', '#eceff1', '#78909c']
 const brands = [
   'Pfizer/BioNTech',
   'Moderna',
@@ -26,15 +26,8 @@ const legendData = brands.reduce((obj, el, i) => {
 const WeeklyGraph = () => {
   return (
     <Box>
-      <Container
-        sx={{ backgroundColor: 'secondary.main', p: 10 }}
-        maxWidth="false"
-      >
-        {' '}
-        <Typography color={'text.secondary'} variant={'h4'} align={'center'}>
-          Administrations weekly trend
-        </Typography>
-      </Container>
+      <Header title={'Administrations weekly trend'} />
+
       <Grid
         container
         sx={{
@@ -68,12 +61,15 @@ const WeeklyGraph = () => {
             }}
           >
             {' '}
-            <Typography variant={'h6'} align={'center'}>
+            <Typography variant={'h7'} align={'center'}>
               *Pass with mouse on the graph bars to show the weekly data
             </Typography>
             <Box>
               <Graph />
             </Box>
+            <Typography variant={'h7'} align={'center'}>
+              *Move selectors to zoom left and right
+            </Typography>
           </Container>
         </Grid>
       </Grid>
@@ -106,7 +102,7 @@ const Graph = () => {
         id="week-graph"
         data-name="week-graph"
         xmlns="http://www.w3.org/2000/svg"
-        viewBox={'0 120 680 350'}
+        viewBox={'50 140 680 350'}
       >
         <g transform={`translate(${margin} 0)`}>
           {data?.data.map((el, i) =>
@@ -119,8 +115,8 @@ const Graph = () => {
                     data={{
                       dateRange: formatRange(el[0]),
                       data: {
-                        brand: data.brands[j],
-                        value: el[1][data.brands[j]],
+                        brand: data[brand],
+                        value: el[1][brand],
                       },
                     }}
                   />

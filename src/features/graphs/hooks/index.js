@@ -7,6 +7,8 @@ import {
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 import { useMemo } from 'react'
 import { sumObjectsByKey } from '../../../utils'
+import { KeyboardReturnRounded } from '@mui/icons-material'
+import { ageRange, ageRangePeople, brands } from '../../../data'
 
 const yesterday = new Date()
 yesterday.setDate(yesterday.getDate() - 1)
@@ -15,13 +17,63 @@ const totalPopulation = 59500000
 const under12 = 6024595
 const over12 = totalPopulation - under12
 
+export const useTotalDelivered = () => {
+  let { data, isLoading, isSuccess } = useGetSummaryQuery()
+
+  // ADD EXTRA PROPS VALUES TO THE REGIONS OBJECT
+  /*   console.log('SUMMARY DATA   ', data)
+   */
+  const total = useMemo(() => {
+    if (!data) return
+    else
+      return data.data
+        .reduce((acc, curr) => acc + curr.dosi_consegnate, 0)
+        .toLocaleString('en-US')
+  }, [data])
+
+  return { data: total, isLoading }
+}
+
+export const useTotalAdministrations = () => {
+  let { data, isLoading, isSuccess } = useGetSummaryQuery()
+
+  // ADD EXTRA PROPS VALUES TO THE REGIONS OBJECT
+  /*   console.log('SUMMARY DATA   ', data)
+   */
+  const total = useMemo(() => {
+    if (!data) return
+    else
+      return data.data
+        .reduce((acc, curr) => acc + curr.dosi_somministrate, 0)
+        .toLocaleString('en-US')
+  }, [data])
+
+  return { data: total, isLoading }
+}
+
 export const useAnagraphicData = () => {
   let { data, isLoading, isSuccess } = useGetAnagraphicDataQuery()
-
+  console.log('ANAGRAPHIC', data)
+  data = useMemo(() => {
+    if (!data) return
+    else
+      return data.data.map((el) => ({
+        ...el,
+        people: ageRangePeople[el.fascia_anagrafica],
+      }))
+  }, [data])
   return {
+    data: {
+      data,
+      doseTypes: [
+        { key: 'people', label: 'Total' },
+        { key: 'prima_dose', label: 'First dose' },
+        { key: 'seconda_dose', label: 'Second/Single shot dose' },
+        { key: 'dose_booster', label: 'Booster dose' },
+      ],
+    },
     isLoading,
     isSuccess,
-    data,
   }
 }
 
@@ -85,13 +137,7 @@ export const useAdministeredSummaryData = () => {
 
 export const useAdministeredData = () => {
   const { data, isLoading, isSuccess } = useGetAdministeredQuery()
-  /*   console.log('ADMINISTRATIONS', data)
-   */ const brands = [
-    'Pfizer/BioNTech',
-    'Moderna',
-    'Vaxzevria (AstraZeneca)',
-    'Janssen',
-  ]
+
   const computedData = useMemo(() => {
     const defaultObj = {
       'Pfizer/BioNTech': 0,

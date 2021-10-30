@@ -1,19 +1,22 @@
 import { Box, Container, Grid, Typography } from '@mui/material'
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
+import Header from '../../components/reusable/Header'
 import Map from '../italymap/Map'
-import { useAdministeredSummaryData } from './hooks'
+import AnagraphicGraph from './AnagraphicGraph'
+import BadgeTextGraph from './BadgeTextGraph'
+import DeliveredGraph from './DeliveredGraph'
+import {
+  useAdministeredSummaryData,
+  useAnagraphicData,
+  useTotalAdministrations,
+} from './hooks'
 
-import RegionsData from './RegionsData'
+import RegionsGraph from './RegionsGraph'
 import TextGraph from './TextGraph'
 import WeeklyGraph from './WeeklyGraph'
 
 const Graphs = () => {
-  /*   const {
-    data: anagraphicData,
-    isLoading: anagraphicIsLoading,
-  } = useAnagraphicData() */
-
   return (
     <Box>
       <TextGraph
@@ -26,13 +29,9 @@ const Graphs = () => {
         Comp1={TotalAdditional}
         Comp2={TotalBooster}
       />
-      <RegionsData />
-      <WeeklyGraph />
-      {/* {anagraphicIsLoading
-        ? 'Loading...'
-        : Object.entries(anagraphicData).map((data) => (
-            <Graph key={data[0]} data={data[1]} />
-          ))} */}
+      <RegionsGraph />
+      <WeeklyGraph /> <AnagraphicGraph />
+      <DeliveredGraph />
     </Box>
   )
 }

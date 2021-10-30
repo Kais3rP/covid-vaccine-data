@@ -33,6 +33,10 @@
 }
 
 .bar:hover {
-  fill: #78909c;
+  fill: red;
   cursor: pointer;
+}
+
+.bar_text {
+  font: italic 12px sans-serif;
 }

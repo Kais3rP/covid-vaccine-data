@@ -134,3 +134,32 @@ export const borderColors = [
   'rgba(153, 102, 255, 1)',
   'rgba(255, 159, 64, 1)',
 ]
+
+export const barColors = ['#263238', '#546e7a', '#90a4ae', '#eceff1', '#78909c']
+
+export const brands = [
+  'Pfizer/BioNTech',
+  'Moderna',
+  'Vaxzevria (AstraZeneca)',
+  'Janssen',
+]
+
+export const ageRangePeople = {
+  '12-19': 4627514,
+
+  '20-29': 6013709,
+
+  '30-39': 6794332,
+
+  '40-49': 8786975,
+
+  '50-59': 9651130,
+
+  '60-69': 7553486,
+
+  '70-79': 6019293,
+
+  '80-89': 3628160,
+
+  '90+': 781543,
+}

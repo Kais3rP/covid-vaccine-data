@@ -6,5 +6,8 @@ export const Badge = styled('img')((props) => ({
   padding: '0 15px 0 0',
   top: props.top || 0,
   left: props.left || 0,
-  marginLeft: props.position === 'absolute' ? -(props.width / 2)+"rem" || -'3rem' : 0,
+  bottom: props.bottom || 0,
+  right: props.right || 0,
+  marginLeft:
+    props.position === 'absolute' ? -(props.width / 2) + 'rem' || -'3rem' : 0,
 }))
