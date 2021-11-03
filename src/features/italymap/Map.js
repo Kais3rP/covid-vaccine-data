@@ -3,7 +3,7 @@ import React from 'react'
 import { regionAttributes } from './data'
 import Region from './Region'
 
-const Map = ({ data }) => {
+const Map = ({ data, type, deselectOnBlur = true }) => {
   return (
     <Box>
       {' '}
@@ -18,6 +18,8 @@ const Map = ({ data }) => {
       >
         {regionAttributes.map((x, i) => (
           <Region
+            deselectOnBlur={deselectOnBlur}
+            type={type}
             key={i}
             lat={x.lat}
             lon={x.lon}

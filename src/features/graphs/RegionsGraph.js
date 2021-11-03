@@ -16,12 +16,12 @@ const RegionsData = () => {
     return currentRegion
       ? {
           columns: summaryData.columns,
-          rows: summaryData.rows.filter((el) => el.region === currentRegion),
+          rows: summaryData.rows.filter((el) => el.region === currentRegion.id),
         }
       : summaryData
   }, [currentRegion, summaryData])
-  /*   console.log('REGION', currentRegion, 'SUMMARY', summaryData)
-   */
+  console.log('REGION', currentRegion, 'SUMMARY', summaryData)
+
   return summaryIsLoading || !summaryIsSuccess ? (
     'Loading...'
   ) : (
@@ -38,10 +38,11 @@ const RegionsData = () => {
         <Grid item xs={12} md={6}>
           {' '}
           <Map
+            type={'summary'}
             data={
               currentRegion
-                ? summaryData?.rows[0].administered
-                : summaryData?.rows[summaryData.rows.length - 1].administered
+                ? summaryData?.rows[0]?.administered
+                : summaryData?.rows[summaryData.rows.length - 1]?.administered
             }
           />
         </Grid>

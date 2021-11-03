@@ -7,6 +7,9 @@ import { theme } from './theme'
 import Graphs from './features/graphs/Graphs'
 import Hero from './components/hero/Hero'
 
+/* SUPPRESS console.log */
+//window.console.log = () => {}
+
 const App = () => {
   return (
     <ThemeProvider theme={theme}>

@@ -14,6 +14,9 @@ export const covidApi = createApi({
     getAnagraphicData: builder.query({
       query: (name) => `anagrafica-vaccini-summary-latest.json`,
     }),
+    getAnagraphicPopulationData: builder.query({
+      query: (name) => `platea.json`,
+    }),
     getAdministeredSummary: builder.query({
       query: (name) => `somministrazioni-vaccini-summary-latest.json`,
     }),
@@ -30,4 +33,5 @@ export const {
   useGetAdministeredSummaryQuery,
   useGetSummaryQuery,
   useGetAnagraphicDataQuery,
+  useGetAnagraphicPopulationDataQuery,
 } = covidApi

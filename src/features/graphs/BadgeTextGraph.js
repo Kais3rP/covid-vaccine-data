@@ -10,6 +10,7 @@ const BadgeTextGraph = ({ title, data, badgePosition }) => {
       sx={{
         backgroundColor: 'primary.main',
         p: 6,
+        pb: 1,
         position: 'relative',
         mt: 6,
         mb: 2,
@@ -28,13 +29,20 @@ const BadgeTextGraph = ({ title, data, badgePosition }) => {
       <Typography color={'text.primary'} variant={'h6'} align={'center'}>
         {title}
       </Typography>
-      <Typography sx={{mt: 2}} color={'text.primary'} variant={'h3'} align={'center'}>
+      <Typography
+        sx={{ mt: 2 }}
+        color={'text.primary'}
+        variant={'h3'}
+        align={'center'}
+      >
         {data}
       </Typography>
-      <Box  sx={{
-        display: "flex",
-        justifyContent: "flex-end"
-      }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+        }}
+      >
         {' '}
         <Badge src={gum} alt="gum" width={3.5} />
       </Box>

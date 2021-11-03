@@ -3,7 +3,11 @@ import { useSelector } from 'react-redux'
 import Header from '../../components/reusable/Header'
 import HtmlTooltip from '../../components/reusable/HtmlTooltip'
 import BadgeTextGraph from './BadgeTextGraph'
-import { useAnagraphicData, useTotalAdministrations } from './hooks'
+import {
+  useAnagraphicData,
+  useAnagraphicRegionsData,
+  useTotalAdministrations,
+} from './hooks'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import debounce from 'lodash.debounce'
 import { useAdministeredData } from './hooks'
@@ -12,35 +16,86 @@ import people from '../../img/group_person.svg'
 import { useWidth } from '../../hooks'
 import { format } from 'date-fns'
 import { barColors } from '../../data'
+import Map from '../italymap/Map'
+
+import { useGetAdministeredQuery } from '../../services'
 
 const AnagraphicGraph = () => {
-  const { data, isLoading } = useTotalAdministrations()
-  return isLoading ? (
+  const [ageRangeSelected, setAgeRangeSelected] = useState(null)
+
+  const {
+    data: totalData,
+    isLoading: isLoadingTotal,
+  } = useTotalAdministrations()
+  const currentRegion = useSelector((state) => state.map.region)
+
+  const { data: ageData, isLoading: isLoadingAge } = useAnagraphicData()
+  const {
+    data: ageRegionData,
+    isLoading: isLoadingAgeRegions,
+  } = useAnagraphicRegionsData()
+
+  const computedData = useMemo(() => {
+    if (!ageRegionData || !ageData) return
+    if (currentRegion && currentRegion?.type === 'age') {
+      console.log('COMPUTING REGION...')
+      return { ...ageRegionData, data: ageRegionData.data[currentRegion.id] }
+    } else return ageData
+  }, [ageData, ageRegionData, currentRegion])
+
+  const totalDataRegion = useMemo(() => {
+    if (!ageRegionData || !ageData) return
+    if (currentRegion && currentRegion?.type === 'age')
+      if (ageRangeSelected)
+        return ageRegionData.data[currentRegion.id][ageRangeSelected.idx].totale
+      else
+        return ageRegionData.data[currentRegion.id]
+          .reduce((sum, curr) => sum + curr.totale, 0)
+          .toLocaleString('en-US')
+    else if (ageRangeSelected) return ageData.data[ageRangeSelected.idx].totale
+    else return totalData
+  }, [ageRegionData, ageData, currentRegion])
+
+  console.log(
+    'CURRENT REGION',
+    currentRegion,
+    'AGE  REGIONS COMPUTED',
+    computedData,
+  )
+  return isLoadingTotal || isLoadingAgeRegions || isLoadingAge ? (
     'Loading...'
   ) : (
     <Box>
       <Header title={'Administrations following age ranges'} />
       <BadgeTextGraph
         title={'Total administrations'}
-        data={data}
+        data={
+          currentRegion && currentRegion.type === 'age'
+            ? totalDataRegion
+            : totalData
+        }
         badgePosition={'left'}
       />
-      <Graph />
+      <Graph
+        data={computedData}
+        onClick={(el, type, idx) =>
+          setAgeRangeSelected({ range: el.fascia_anagrafica, type, idx })
+        }
+        ageRangeSelected={ageRangeSelected}
+      />
+      <Map type={'age'} deselectOnBlur={false} />
     </Box>
   )
 }
 
-const Graph = () => {
+const Graph = ({ data, onClick, ageRangeSelected }) => {
   const { width, ref } = useWidth()
   const barWidth = 25
   const height = 500
   const barMargin = 52
-  const { data, isLoading } = useAnagraphicData()
-  console.log('ANAGRAPHIC DATA', data)
+  console.log('AGE RANGE SELECTED', ageRangeSelected)
   const margin = width / 2
-  return isLoading ? (
-    'Loading...'
-  ) : (
+  return (
     <Box sx={{ position: 'relative' }}>
       <svg
         width="100%"
@@ -74,16 +129,22 @@ const Graph = () => {
                           1,
                         ),
                         total: el.people.toLocaleString('en-US'),
-                        isTotal: type.key === 'totale',
+                        isTotal: type.key === 'people',
                       }}
                     />
                   }
                 >
                   <rect
+                    onClick={() => onClick(el, type, i)}
                     className="bar"
                     width={barWidth}
                     height={formatData(el[type.key])}
-                    fill={barColors[j]}
+                    fill={
+                      ageRangeSelected?.range === el.fascia_anagrafica &&
+                      ageRangeSelected?.type.key === type.key
+                        ? '#F00'
+                        : barColors[j]
+                    }
                     x={i * (barWidth + 2)}
                     y={height - barMargin - formatData(el[type.key])}
                   />

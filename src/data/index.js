@@ -4,7 +4,7 @@ export const regions = [
   'Calabria',
   'Campania',
   'EmiliaRomagna',
-  'Friuli Venezia Giullia',
+  'Friuli-Venezia Giulia',
   'Lazio',
   'Liguria',
   'Lombardia',
@@ -44,7 +44,7 @@ export const regionsData = {
     population: 4445549,
   },
   friuliveneziagiulia: {
-    label: 'Friuli-Venezia-Giulia',
+    label: 'Friuli-Venezia Giulia',
     population: 1198753,
   },
   lazio: {
