@@ -4,12 +4,14 @@ import { setCurrentRegion } from './map.slice'
 
 const Region = ({ id, d, transform, type, deselectOnBlur }) => {
   const dispatch = useDispatch()
-  const onClick = (e) => {
-    dispatch(setCurrentRegion({ id, type }))
-    e.stopPropagation()
-  }
 
   const currentRegion = useSelector((state) => state.map.region)
+  const onClick = (e) => {
+    if (currentRegion && currentRegion.type === type && currentRegion.id === id)
+      dispatch(setCurrentRegion(null))
+    else dispatch(setCurrentRegion({ id, type }))
+    e.stopPropagation()
+  }
   console.log('CURRENT MAP REGION', currentRegion?.id, currentRegion?.type)
   return (
     <g

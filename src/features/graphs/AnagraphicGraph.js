@@ -22,79 +22,73 @@ import { useGetAdministeredQuery } from '../../services'
 
 const AnagraphicGraph = () => {
   const [ageRangeSelected, setAgeRangeSelected] = useState(null)
-
-  const {
-    data: totalData,
-    isLoading: isLoadingTotal,
-  } = useTotalAdministrations()
   const currentRegion = useSelector((state) => state.map.region)
-
-  const { data: ageData, isLoading: isLoadingAge } = useAnagraphicData()
-  const {
-    data: ageRegionData,
-    isLoading: isLoadingAgeRegions,
-  } = useAnagraphicRegionsData()
+  const { data, isLoading } = useAnagraphicData()
+  console.log('CURRENT AGE SELECTED', ageRangeSelected)
 
   const computedData = useMemo(() => {
-    if (!ageRegionData || !ageData) return
+    if (!data.data) return
     if (currentRegion && currentRegion?.type === 'age') {
-      console.log('COMPUTING REGION...')
-      return { ...ageRegionData, data: ageRegionData.data[currentRegion.id] }
-    } else return ageData
-  }, [ageData, ageRegionData, currentRegion])
+      return { ...data, data: data.data[currentRegion.id] }
+    } else return { ...data, data: data.data.Total }
+  }, [data, currentRegion])
+  console.log('ANAGRAPHIC COMPUTED', computedData)
 
-  const totalDataRegion = useMemo(() => {
-    if (!ageRegionData || !ageData) return
-    if (currentRegion && currentRegion?.type === 'age')
-      if (ageRangeSelected)
-        return ageRegionData.data[currentRegion.id][ageRangeSelected.idx].totale
-      else
-        return ageRegionData.data[currentRegion.id]
-          .reduce((sum, curr) => sum + curr.totale, 0)
-          .toLocaleString('en-US')
-    else if (ageRangeSelected) return ageData.data[ageRangeSelected.idx].totale
-    else return totalData
-  }, [ageRegionData, ageData, currentRegion])
+  const totalNumber = useMemo(() => {
+    if (!computedData) return
+    if (ageRangeSelected)
+      return computedData.data
+        .find((el) => el.fascia_anagrafica === ageRangeSelected.range)
+        [ageRangeSelected.type.key].toLocaleString('en-US')
+    else
+      return computedData.data
+        .reduce((sum, curr) => sum + curr.totale, 0)
+        .toLocaleString('en-US')
+  }, [computedData])
 
-  console.log(
-    'CURRENT REGION',
-    currentRegion,
-    'AGE  REGIONS COMPUTED',
-    computedData,
-  )
-  return isLoadingTotal || isLoadingAgeRegions || isLoadingAge ? (
+  return isLoading ? (
     'Loading...'
   ) : (
     <Box>
       <Header title={'Administrations following age ranges'} />
       <BadgeTextGraph
         title={'Total administrations'}
-        data={
-          currentRegion && currentRegion.type === 'age'
-            ? totalDataRegion
-            : totalData
-        }
+        data={totalNumber}
         badgePosition={'left'}
       />
-      <Graph
-        data={computedData}
-        onClick={(el, type, idx) =>
-          setAgeRangeSelected({ range: el.fascia_anagrafica, type, idx })
-        }
-        ageRangeSelected={ageRangeSelected}
-      />
-      <Map type={'age'} deselectOnBlur={false} />
+      <Grid container sx={{ mt: 3, display: 'flex' }}>
+        <Grid item xs={12} md={6}>
+          <Graph
+            data={computedData}
+            onClick={(el, type, idx) => {
+              if (
+                ageRangeSelected &&
+                ageRangeSelected.type.key === type.key &&
+                ageRangeSelected.range === el.fascia_anagrafica
+              )
+                setAgeRangeSelected(null)
+              else
+                setAgeRangeSelected({ range: el.fascia_anagrafica, type, idx })
+            }}
+            ageRangeSelected={ageRangeSelected}
+            isRegionSelected={currentRegion && currentRegion.type === 'age'}
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Map type={'age'} deselectOnBlur={false} showData={false} />
+        </Grid>
+      </Grid>
     </Box>
   )
 }
 
-const Graph = ({ data, onClick, ageRangeSelected }) => {
+const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
   const { width, ref } = useWidth()
-  const barWidth = 25
-  const height = 500
-  const barMargin = 52
-  console.log('AGE RANGE SELECTED', ageRangeSelected)
+  const barWidth = 45
+  const height = 600
+  const barMargin = 56
   const margin = width / 2
+  const barMarginX = 10
   return (
     <Box sx={{ position: 'relative' }}>
       <svg
@@ -104,7 +98,7 @@ const Graph = ({ data, onClick, ageRangeSelected }) => {
         id="week-graph"
         data-name="week-graph"
         xmlns="http://www.w3.org/2000/svg"
-        viewBox={'0 0  680 350'}
+        viewBox={'-500 100  680 350'}
       >
         <g transform={`translate(${margin} 0) rotate(90)`}>
           {data?.data.map((el, i) => (
@@ -112,8 +106,8 @@ const Graph = ({ data, onClick, ageRangeSelected }) => {
               <text
                 className="bar_text"
                 transform={`rotate(-90)`}
-                x={-(height + 50)}
-                y={16 + i * (barWidth + 2)}
+                x={-(height + 40)}
+                y={barWidth / 2 + i * (barWidth + barMarginX)}
               >{`Range ${el.fascia_anagrafica}`}</text>
               {data?.doseTypes.map((type, j) => (
                 <HtmlTooltip
@@ -123,9 +117,9 @@ const Graph = ({ data, onClick, ageRangeSelected }) => {
                     <BarTooltip
                       data={{
                         type: type.label,
-                        value: el[type.key].toLocaleString('en-US'),
+                        value: el[type.key]?.toLocaleString('en-US'),
                         ageRange: el.fascia_anagrafica,
-                        percentage: ((el[type.key] * 100) / el.totale).toFixed(
+                        percentage: ((el[type.key] * 100) / el.people).toFixed(
                           1,
                         ),
                         total: el.people.toLocaleString('en-US'),
@@ -138,15 +132,19 @@ const Graph = ({ data, onClick, ageRangeSelected }) => {
                     onClick={() => onClick(el, type, i)}
                     className="bar"
                     width={barWidth}
-                    height={formatData(el[type.key])}
+                    height={formatData(el[type.key], isRegionSelected && 'big')}
                     fill={
                       ageRangeSelected?.range === el.fascia_anagrafica &&
                       ageRangeSelected?.type.key === type.key
                         ? '#F00'
                         : barColors[j]
                     }
-                    x={i * (barWidth + 2)}
-                    y={height - barMargin - formatData(el[type.key])}
+                    x={i * (barWidth + barMarginX)}
+                    y={
+                      height -
+                      barMargin -
+                      formatData(el[type.key], isRegionSelected && 'big')
+                    }
                   />
                 </HtmlTooltip>
               ))}
@@ -173,7 +171,7 @@ const BarTooltip = ({ data }) => {
       )}
       {!data.isTotal && (
         <Typography color="inherit">
-          {`Vaccinated ${data.value} on a total of ${data.total} people`}
+          {`Vaccinated ${data.value} on a total of ${data.people} people`}
         </Typography>
       )}
     </>
@@ -203,4 +201,4 @@ const Legend = ({ data }) => {
   )
 }
 
-const formatData = (value) => value / 20000
+const formatData = (value, type) => value / (type === 'big' ? 2000 : 30000)

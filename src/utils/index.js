@@ -14,7 +14,7 @@ export const sumObjectsByKeyInclusive = (...objs) => {
     for (const k in b) {
       if (b.hasOwnProperty(k) && typeof b[k] === 'number')
         a[k] = (a[k] || 0) + b[k]
-      else a[k] = b[k]
+      else if (!a[k]) a[k] = b[k]
     }
     return a
   }, {})
@@ -26,7 +26,8 @@ export const sumObjectsByKeySelective = (keys, ...objs) => {
     for (const k in b) {
       if (b.hasOwnProperty(k) && typeof b[k] === 'number' && keys.includes(k))
         a[k] = (a[k] || 0) + b[k]
-      else if (typeof b[k] === 'string' && keys.includes(k)) a[k] = b[k]
+      else if (typeof b[k] === 'string' && keys.includes(k))
+        if (!a[k]) a[k] = b[k]
     }
     return a
   }, {})

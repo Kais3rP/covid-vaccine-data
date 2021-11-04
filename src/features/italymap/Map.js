@@ -3,7 +3,7 @@ import React from 'react'
 import { regionAttributes } from './data'
 import Region from './Region'
 
-const Map = ({ data, type, deselectOnBlur = true }) => {
+const Map = ({ data, type, deselectOnBlur = true, showData }) => {
   return (
     <Box>
       {' '}
@@ -32,12 +32,16 @@ const Map = ({ data, type, deselectOnBlur = true }) => {
         ))}
         ;
       </svg>
-      <Typography align={'center'} color={'text.secondary'} variant={'h3'}>
-        {data}
-      </Typography>
-      <Typography align={'center'} color={'text.secondary'} variant={'h5'}>
-        Total administrations
-      </Typography>
+      {showData && (
+        <>
+          <Typography align={'center'} color={'text.secondary'} variant={'h3'}>
+            {data}
+          </Typography>
+          <Typography align={'center'} color={'text.secondary'} variant={'h5'}>
+            Total administrations
+          </Typography>
+        </>
+      )}
     </Box>
   )
 }

@@ -2,6 +2,7 @@ import {
   useGetAdministeredQuery,
   useGetAdministeredSummaryQuery,
   useGetAnagraphicDataQuery,
+  useGetAnagraphicPopulationDataQuery,
   useGetSummaryQuery,
 } from '../../../services'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
@@ -57,6 +58,30 @@ export const useTotalAdministrations = () => {
 }
 
 export const useAnagraphicData = () => {
+  /**
+   *
+   *  COSTANTS
+   *
+   */
+
+  const keys = [
+    'prima_dose',
+    'seconda_dose',
+    'dose_booster',
+    'dose_aggiuntiva',
+    'fascia_anagrafica',
+    'people',
+    'totale',
+  ]
+
+  const regions = [...Object.values(regionsData).map((el) => el.label), 'Total']
+
+  /**
+   *
+   *  QUERIES
+   *
+   */
+
   let {
     data: totalData,
     isLoading: totalIsLoading,
@@ -66,32 +91,36 @@ export const useAnagraphicData = () => {
     data: peopleData,
     isLoading: peopleIsLoading,
     isSuccess: peopleIsSuccess,
-  } = useGetAnagraphicDataQuery()
+  } = useGetAnagraphicPopulationDataQuery()
   let { data, isLoading, isSuccess } = useGetAdministeredQuery()
+
+  /**
+   *
+   *  MANIPULATED DATA
+   *
+   */
 
   totalData = useMemo(() => {
     if (!totalData) return
     else
-      return totalData.data.map((el) => ({
-        ...el,
-        people: ageRangePeople[el.fascia_anagrafica],
-      }))
+      return totalData.data
+        .map((el, i) =>
+          i === 7
+            ? sumObjectsByKeyInclusive(
+                {
+                  ...el,
+                  fascia_anagrafica: '80+',
+                  people: ageRangePeople['80+'],
+                },
+                totalData.data[i + 1],
+              )
+            : {
+                ...el,
+                people: ageRangePeople[el.fascia_anagrafica],
+              },
+        )
+        .filter((el, i) => i !== 8)
   }, [totalData])
-  console.log('ANAGRAPHIC TOTAL', totalData)
-
-  const keys = [
-    'prima_dose',
-    'seconda_dose',
-    'dose_booster',
-    'dose_aggiuntiva',
-    'fascia_anagrafica',
-    'people',
-    'totale',
-  ]
-
-  console.log('AGE REGIONS DATA BEFORE COMPUTING', data)
-
-  const regions = [...Object.values(regionsData).map((el) => el.label), 'Total']
 
   const agesArr = ageRange.map((el) => ({
     fascia_anagrafica: el,
@@ -103,33 +132,41 @@ export const useAnagraphicData = () => {
     totale: 0,
   }))
 
-  let defaultObj = regions.reduce((obj, el) => {
-    if (el === 'Total') obj[el] = totalData
-    else {
-      const _agesArr = agesArr.map((el) => ({
-        ...el,
-        people: peopleData.find((el) => el.nome_area === el),
-      }))
-
-      obj[el] = _agesArr
-    }
-    return obj
-  }, {})
-
-  console.log('REGIONS', regions, 'AGES', agesArr, 'DEFAULT', defaultObj)
+  let defaultObj = useMemo(
+    () =>
+      peopleData && totalData
+        ? regions.reduce((obj, el) => {
+            if (el === 'Total') obj[el] = totalData
+            else {
+              const _agesArr = agesArr.map((el2) => ({
+                ...el2,
+                people: peopleData.data.find(
+                  (el3) =>
+                    el3.nome_area === el &&
+                    el3.fascia_anagrafica === el2.fascia_anagrafica,
+                )?.totale_popolazione,
+              }))
+              obj[el] = _agesArr
+            }
+            return obj
+          }, {})
+        : null,
+    [peopleData, totalData],
+  )
 
   const computedData = useMemo(() => {
-    if (!data) return
+    if (!data || !defaultObj) return
     else {
       return data.data.reduce(
         (obj, el, i) => {
           if (obj[el.nome_area]) {
-            const idx = obj[el.nome_area].findIndex(
-              (el2) => el2.fascia_anagrafica === el.fascia_anagrafica,
-            )
-            if (i <= 5) {
-              console.log(obj, el, idx, obj[el.nome_area][idx])
-            }
+            const idx = obj[el.nome_area].findIndex((el2) => {
+              return el.fascia_anagrafica === '80-89' ||
+                el.fascia_anagrafica === '90+'
+                ? el2.fascia_anagrafica === '80+'
+                : el2.fascia_anagrafica === el.fascia_anagrafica
+            })
+
             obj[el.nome_area][idx].totale +=
               el.prima_dose +
               el.seconda_dose +
@@ -147,88 +184,6 @@ export const useAnagraphicData = () => {
       )
     }
   }, [data])
-
-  console.log('ANAGRAPHIC REGIONS AGE COMPUTED DATA', computedData)
-
-  return {
-    data: {
-      data: computedData,
-      doseTypes: [
-        { key: 'people', label: 'Total' },
-        { key: 'prima_dose', label: 'First dose' },
-        { key: 'seconda_dose', label: 'Second/Single shot dose' },
-        { key: 'dose_booster', label: 'Booster dose' },
-      ],
-    },
-    isLoading,
-    isSuccess,
-  }
-}
-
-export const useAnagraphicRegionsData = () => {
-  let { data, isLoading, isSuccess } = useGetAdministeredQuery()
-  const keys = [
-    'prima_dose',
-    'seconda_dose',
-    'dose_booster',
-    'dose_aggiuntiva',
-    'fascia_anagrafica',
-    'people',
-    'totale',
-  ]
-
-  console.log('AGE REGIONS DATA BEFORE COMPUTING', data)
-
-  const regions = Object.values(regionsData).map((el) => el.label)
-
-  const agesArr = ageRange.map((el) => ({
-    fascia_anagrafica: el,
-    prima_dose: 0,
-    seconda_dose: 0,
-    dose_booster: 0,
-    dose_aggiuntiva: 0,
-    people: 0,
-    totale: 0,
-  }))
-
-  let defaultObj = regions.reduce((obj, el) => {
-    obj[el] = [...agesArr]
-    return obj
-  }, {})
-
-  console.log('REGIONS', regions, 'AGES', agesArr, 'DEFAULT', defaultObj)
-
-  const computedData = useMemo(() => {
-    if (!data) return
-    else {
-      return data.data.reduce(
-        (obj, el, i) => {
-          if (obj[el.nome_area]) {
-            const idx = obj[el.nome_area].findIndex(
-              (el2) => el2.fascia_anagrafica === el.fascia_anagrafica,
-            )
-            if (i <= 5) {
-              console.log(obj, el, idx, obj[el.nome_area][idx])
-            }
-            obj[el.nome_area][idx].totale +=
-              el.prima_dose +
-              el.seconda_dose +
-              el.dose_aggiuntiva +
-              el.dose_booster
-            obj[el.nome_area][idx] = sumObjectsByKeySelective(
-              keys,
-              obj[el.nome_area][idx],
-              el,
-            )
-          }
-          return obj
-        },
-        { ...defaultObj },
-      )
-    }
-  }, [data])
-
-  console.log('ANAGRAPHIC REGIONS AGE COMPUTED DATA', computedData)
 
   return {
     data: {
@@ -271,12 +226,6 @@ export const useAdministeredSummaryData = () => {
   const boosterDoseTotal = useMemo(() => {
     return data?.data.reduce((acc, curr) => acc + curr.dose_booster, 0)
   }, [data])
-  console.log(
-    ' ADMINISTRATIONS SUMMARY ',
-    isLoading,
-    firstDoseTotal,
-    secondDoseTotal,
-  )
 
   return {
     data: data && {
@@ -318,7 +267,9 @@ export const useAdministeredData = () => {
       'Vaxzevria (AstraZeneca)': 0,
       Janssen: 0,
     }
+
     let prevDate
+
     return (
       data &&
       Object.entries(
@@ -344,8 +295,8 @@ export const useAdministeredData = () => {
       )
     )
   }, [data])
-  console.log('COMPUTED DATA SUPPLIER / DATE', computedData)
-  return {
+  /*   console.log('COMPUTED DATA SUPPLIER / DATE', computedData)
+   */ return {
     data: {
       data: computedData,
       brands,
@@ -354,7 +305,7 @@ export const useAdministeredData = () => {
     isSuccess,
   }
 }
-
+/* 
 export const useAdministeredAgeRegion = () => {
   const { data, isLoading, isSuccess } = useGetAdministeredQuery()
 
@@ -391,7 +342,6 @@ export const useAdministeredAgeRegion = () => {
       )
     )
   }, [data])
-  console.log('COMPUTED DATA SUPPLIER / DATE', computedData)
   return {
     data: {
       data: computedData,
@@ -400,7 +350,7 @@ export const useAdministeredAgeRegion = () => {
     isLoading,
     isSuccess,
   }
-}
+} */
 
 export const useSummaryData = () => {
   let { data, isLoading, isSuccess } = useGetSummaryQuery()
