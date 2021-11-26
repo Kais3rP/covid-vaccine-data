@@ -4,6 +4,7 @@ import Header from '../../components/reusable/Header'
 import BadgeTextGraph from './BadgeTextGraph'
 import {
   useAnagraphicData,
+  useSuppliedData,
   useTotalAdministrations,
   useTotalDelivered,
 } from './hooks'
@@ -16,9 +17,18 @@ import people from '../../img/group_person.svg'
 import { useWidth } from '../../hooks'
 import { format } from 'date-fns'
 import { barColors } from '../../data'
+import { SignalCellularNullRounded } from '@mui/icons-material'
+import {
+  RandomAxis,
+  RandomAxisHorizontal,
+} from '../../components/reusable/Axis'
 
 const DeliveredGraph = () => {
-  const { data: total, isLoading } = useTotalDelivered()
+  const { data, isLoading } = useSuppliedData()
+  const [supplierSelected, setSupplierSelected] = useState(null)
+  const onClick = (data) => {
+    setSupplierSelected((d) => (d && d[0] === data[0] ? null : data))
+  }
 
   return isLoading ? (
     'Loading...'
@@ -27,8 +37,21 @@ const DeliveredGraph = () => {
       <Header title={'Supplier distribution'} />
       <BadgeTextGraph
         title={'Total vaccines delivered'}
-        data={total}
+        data={
+          supplierSelected
+            ? `${supplierSelected[0]} - ${supplierSelected[1].toLocaleString(
+                'en-US',
+              )}`
+            : data?.data
+                .find((el) => el[0] === 'total')[1]
+                .toLocaleString('en-US')
+        }
         badgePosition={'right'}
+      />
+      <Graph
+        data={data}
+        onClick={onClick}
+        supplierSelected={supplierSelected}
       />
     </Box>
   )
@@ -36,68 +59,74 @@ const DeliveredGraph = () => {
 
 export default DeliveredGraph
 
-const Graph = () => {
+const Graph = ({ data, onClick, supplierSelected }) => {
   const { width, ref } = useWidth()
-  const barWidth = 25
-  const height = 500
-  const barMargin = 52
-  const { data, isLoading } = useAnagraphicData()
-  console.log('ANAGRAPHIC DATA', data)
-  const margin = width / 2
-  return isLoading ? (
-    'Loading...'
-  ) : (
+  const barWidth = 70
+  const height = 800
+  const barMargin = 100
+
+  const leftCounterMargin = 0
+  const barXMargin = 70
+  const margin = 150 /* (width - (barXMargin + barWidth) * data?.data.length) / 2 */
+  return (
     <Box sx={{ position: 'relative' }}>
       <svg
         width="100%"
         height={height}
         ref={ref}
-        id="week-graph"
+        id="suppliers-graph"
         data-name="week-graph"
         xmlns="http://www.w3.org/2000/svg"
-        viewBox={'0 0  680 350'}
+        viewBox={'0 420 800 350'}
       >
-        <g transform={`translate(${margin} 0) rotate(90)`}>
-          {data?.data.map((el, i) => (
-            <g>
-              <text
-                className="bar_text"
-                transform={`rotate(-90)`}
-                x={-(height + 50)}
-                y={16 + i * (barWidth + 2)}
-              >{`Range ${el.fascia_anagrafica}`}</text>
-              {data?.doseTypes.map((type, j) => (
+        <g transform={`translate(${margin} 0)`}>
+          {data?.data
+            .filter((el) => el[0] !== 'total')
+            .map((el, i) => (
+              <g>
                 <HtmlTooltip
                   TransitionComponent={Zoom}
                   followCursor={true}
                   title={
                     <BarTooltip
                       data={{
-                        type: type.label,
-                        value: el[type.key].toLocaleString('en-US'),
-                        ageRange: el.fascia_anagrafica,
-                        percentage: ((el[type.key] * 100) / el.totale).toFixed(
-                          1,
-                        ),
-                        total: el.people.toLocaleString('en-US'),
-                        isTotal: type.key === 'people',
+                        type: el[0],
+                        value: el[1].toLocaleString('en-US'),
                       }}
                     />
                   }
                 >
                   <rect
+                    onClick={() => onClick(el)}
                     className="bar"
                     width={barWidth}
-                    height={formatData(el[type.key])}
-                    fill={barColors[j]}
-                    x={i * (barWidth + 2)}
-                    y={height - barMargin - formatData(el[type.key])}
+                    height={formatData(el[1])}
+                    fill={
+                      supplierSelected && supplierSelected[0] === el[0]
+                        ? '#F00'
+                        : barColors[i]
+                    }
+                    x={i * (barWidth + barXMargin)}
+                    y={height - barMargin - formatData(el[1])}
                   />
                 </HtmlTooltip>
-              ))}
-            </g>
-          ))}
+                <text
+                  x={i * (barWidth + barXMargin) - 5}
+                  y={height - barMargin - formatData(el[1]) - 10}
+                >
+                  {el[1].toLocaleString('en-US')}
+                </text>
+              </g>
+            ))}
         </g>
+        <RandomAxisHorizontal
+          data={data?.doseTypes}
+          containerWidth={width}
+          containerHeight={height}
+          leftCounterMargin={leftCounterMargin}
+          xGap={barWidth + barXMargin}
+          margin={margin}
+        />
       </svg>
     </Box>
   )
@@ -108,17 +137,8 @@ const BarTooltip = ({ data }) => {
   return (
     <>
       {' '}
-      <Typography color="inherit">{`Age range: ${data.ageRange}`}</Typography>
       <Typography color="inherit">{data.type}</Typography>
       <Typography color="inherit">{data.value}</Typography>
-      {!data.isTotal && (
-        <Typography color="inherit">{`(${data.percentage})%`}</Typography>
-      )}
-      {!data.isTotal && (
-        <Typography color="inherit">
-          {`Vaccinated ${data.value} on a total of ${data.total} people`}
-        </Typography>
-      )}
     </>
   )
 }
@@ -146,4 +166,4 @@ const Legend = ({ data }) => {
   )
 }
 
-const formatData = (value) => value / 20000
+const formatData = (value) => value / 200000

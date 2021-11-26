@@ -12,19 +12,16 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import debounce from 'lodash.debounce'
 import { useAdministeredData } from './hooks'
 import Zoom from '@mui/material/Zoom'
-import people from '../../img/group_person.svg'
 import { useWidth } from '../../hooks'
 import { format } from 'date-fns'
 import { barColors } from '../../data'
 import Map from '../italymap/Map'
 
-import { useGetAdministeredQuery } from '../../services'
-
 const AnagraphicGraph = () => {
   const [ageRangeSelected, setAgeRangeSelected] = useState(null)
   const currentRegion = useSelector((state) => state.map.region)
+
   const { data, isLoading } = useAnagraphicData()
-  console.log('CURRENT AGE SELECTED', ageRangeSelected)
 
   const computedData = useMemo(() => {
     if (!data.data) return
@@ -32,7 +29,6 @@ const AnagraphicGraph = () => {
       return { ...data, data: data.data[currentRegion.id] }
     } else return { ...data, data: data.data.Total }
   }, [data, currentRegion])
-  console.log('ANAGRAPHIC COMPUTED', computedData)
 
   const totalNumber = useMemo(() => {
     if (!computedData) return
@@ -46,13 +42,26 @@ const AnagraphicGraph = () => {
         .toLocaleString('en-US')
   }, [computedData])
 
+  const legendData = computedData?.doseTypes.reduce((obj, el, i) => {
+    obj[el.label] = barColors[i]
+    return obj
+  }, {})
+
   return isLoading ? (
     'Loading...'
   ) : (
     <Box>
       <Header title={'Administrations following age ranges'} />
       <BadgeTextGraph
-        title={'Total administrations'}
+        title={`Total administrations - ${
+          currentRegion && currentRegion.type === 'age'
+            ? currentRegion.id
+            : 'Italy'
+        } - ${
+          ageRangeSelected
+            ? ageRangeSelected.range + ' ' + ageRangeSelected.type.label
+            : 'Total'
+        }`}
         data={totalNumber}
         badgePosition={'left'}
       />
@@ -73,9 +82,14 @@ const AnagraphicGraph = () => {
             ageRangeSelected={ageRangeSelected}
             isRegionSelected={currentRegion && currentRegion.type === 'age'}
           />
+          <Legend data={legendData} isDark />
+          <Typography color={'primary'}>
+            *Pass with mouse over the bars to show tooltip info. Click on bars
+            to show all the details.
+          </Typography>
         </Grid>
         <Grid item xs={12} md={6}>
-          <Map type={'age'} deselectOnBlur={false} showData={false} />
+          <Map type={'age'} deselectOnBlur={false} />
         </Grid>
       </Grid>
     </Box>
@@ -95,7 +109,7 @@ const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
         width="100%"
         height={height}
         ref={ref}
-        id="week-graph"
+        id="anagraphic-graph"
         data-name="week-graph"
         xmlns="http://www.w3.org/2000/svg"
         viewBox={'-500 100  680 350'}
@@ -159,7 +173,6 @@ const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
 export default AnagraphicGraph
 
 const BarTooltip = ({ data }) => {
-  console.log('TOOLTIP DATA', data, data.isTotal)
   return (
     <>
       {' '}
@@ -171,22 +184,21 @@ const BarTooltip = ({ data }) => {
       )}
       {!data.isTotal && (
         <Typography color="inherit">
-          {`Vaccinated ${data.value} on a total of ${data.people} people`}
+          {`Vaccinated ${data.value} on a total of ${data.total} people`}
         </Typography>
       )}
     </>
   )
 }
 
-const Legend = ({ data }) => {
-  console.log('LEGEND', Object.entries(data))
+const Legend = ({ data, isDark }) => {
   return (
-    <Box sx={{ mt: 3 }}>
+    <Box sx={{ mt: 3, display: 'flex', flexWrap: 'wrap' }}>
       {Object.entries(data).map((el) => (
-        <Box key={el[0]} sx={{ display: 'flex', mb: 1 }}>
+        <Box key={el[0]} sx={{ display: 'flex', mb: 1, mr: 2 }}>
           <Box
             sx={{
-              mr: 2,
+              mr: 1,
               width: '30px',
               height: '30px',
               borderRadius: '50%',
@@ -194,11 +206,14 @@ const Legend = ({ data }) => {
             }}
           />
 
-          <Typography variant="h7">{el[0]}</Typography>
+          <Typography color={isDark ? 'primary' : 'secondary'} variant="h7">
+            {el[0]}
+          </Typography>
         </Box>
       ))}
     </Box>
   )
 }
 
-const formatData = (value, type) => value / (type === 'big' ? 2000 : 30000)
+const formatData = (value, type) =>
+  value / (type === 'big' ? (value > 20000 ? 3000 : 300) : 40000)

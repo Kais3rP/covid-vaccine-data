@@ -1,12 +1,15 @@
 .MuiDataGrid-main {
   height: 1200px;
-  max-width: 400px;
+  /* max-width: 400px; */
   overflow: hidden !important;
 }
 
 .MuiDataGrid-root {
   border: none !important;
   overflow: auto !important;
+}
+
+.MuiDataGrid-cell {
 }
 
 .MuiDataGrid-virtualScroller {
@@ -39,4 +42,8 @@
 
 .bar_text {
   font: italic 14px 'Arial';
+}
+
+svg {
+  color: #000;
 }

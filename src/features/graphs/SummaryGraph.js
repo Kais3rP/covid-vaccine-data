@@ -5,7 +5,7 @@ import Map from '../italymap/Map'
 import { useSummaryData } from './hooks'
 import List from './List'
 
-const RegionsData = () => {
+const SummaryGraph = () => {
   let {
     data: summaryData,
     isLoading: summaryIsLoading,
@@ -13,7 +13,7 @@ const RegionsData = () => {
   } = useSummaryData()
   const currentRegion = useSelector((state) => state.map.region)
   summaryData = useMemo(() => {
-    return currentRegion
+    return currentRegion && currentRegion.type === 'summary'
       ? {
           columns: summaryData.columns,
           rows: summaryData.rows.filter((el) => el.region === currentRegion.id),
@@ -51,4 +51,4 @@ const RegionsData = () => {
   )
 }
 
-export default RegionsData
+export default SummaryGraph

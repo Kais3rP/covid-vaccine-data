@@ -3,7 +3,7 @@ import React from 'react'
 import { regionAttributes } from './data'
 import Region from './Region'
 
-const Map = ({ data, type, deselectOnBlur = true, showData }) => {
+const Map = ({ data, type, deselectOnBlur = true }) => {
   return (
     <Box>
       {' '}
@@ -32,7 +32,7 @@ const Map = ({ data, type, deselectOnBlur = true, showData }) => {
         ))}
         ;
       </svg>
-      {showData && (
+      {!!data && (
         <>
           <Typography align={'center'} color={'text.secondary'} variant={'h3'}>
             {data}

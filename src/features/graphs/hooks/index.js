@@ -1,9 +1,11 @@
 import {
   useGetAdministeredQuery,
   useGetAdministeredSummaryQuery,
+  useGetAdministrationSitesQuery,
   useGetAnagraphicDataQuery,
   useGetAnagraphicPopulationDataQuery,
   useGetSummaryQuery,
+  useGetSuppliedQuery,
 } from '../../../services'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 import { useMemo } from 'react'
@@ -14,7 +16,14 @@ import {
   sumObjectsByKeySelective,
 } from '../../../utils'
 import { KeyboardReturnRounded, LegendToggle } from '@mui/icons-material'
-import { ageRange, ageRangePeople, brands, regionsData } from '../../../data'
+import {
+  ageRange,
+  ageRangePeople,
+  brands,
+  regions,
+  regions2,
+  regionsData,
+} from '../../../data'
 
 const yesterday = new Date()
 yesterday.setDate(yesterday.getDate() - 1)
@@ -27,8 +36,7 @@ export const useTotalDelivered = () => {
   let { data, isLoading, isSuccess } = useGetSummaryQuery()
 
   // ADD EXTRA PROPS VALUES TO THE REGIONS OBJECT
-  /*   console.log('SUMMARY DATA   ', data)
-   */
+
   const total = useMemo(() => {
     if (!data) return
     else
@@ -44,8 +52,6 @@ export const useTotalAdministrations = () => {
   let { data, isLoading, isSuccess } = useGetSummaryQuery()
 
   // ADD EXTRA PROPS VALUES TO THE REGIONS OBJECT
-  /*   console.log('SUMMARY DATA   ', data)
-   */
   const total = useMemo(() => {
     if (!data) return
     else
@@ -87,6 +93,7 @@ export const useAnagraphicData = () => {
     isLoading: totalIsLoading,
     isSuccess: totalIsSuccess,
   } = useGetAnagraphicDataQuery()
+
   let {
     data: peopleData,
     isLoading: peopleIsLoading,
@@ -140,11 +147,16 @@ export const useAnagraphicData = () => {
             else {
               const _agesArr = agesArr.map((el2) => ({
                 ...el2,
-                people: peopleData.data.find(
-                  (el3) =>
-                    el3.nome_area === el &&
-                    el3.fascia_anagrafica === el2.fascia_anagrafica,
-                )?.totale_popolazione,
+                people: peopleData.data.find((el3) => {
+                  return (
+                    (el === 'Provincia Autonoma Trento'
+                      ? el3.nome_area === 'P.A. Trento'
+                      : el === "Valle d'Aosta / Vallée d'Aoste"
+                      ? el3.nome_area === "Valle d'Aosta"
+                      : el === el3.nome_area) &&
+                    el3.fascia_anagrafica === el2.fascia_anagrafica
+                  )
+                })?.totale_popolazione,
               }))
               obj[el] = _agesArr
             }
@@ -295,53 +307,7 @@ export const useAdministeredData = () => {
       )
     )
   }, [data])
-  /*   console.log('COMPUTED DATA SUPPLIER / DATE', computedData)
-   */ return {
-    data: {
-      data: computedData,
-      brands,
-    },
-    isLoading,
-    isSuccess,
-  }
-}
-/* 
-export const useAdministeredAgeRegion = () => {
-  const { data, isLoading, isSuccess } = useGetAdministeredQuery()
 
-  const computedData = useMemo(() => {
-    const defaultObj = {
-      'Pfizer/BioNTech': 0,
-      Moderna: 0,
-      'Vaxzevria (AstraZeneca)': 0,
-      Janssen: 0,
-    }
-    let prevDate
-    return (
-      data &&
-      Object.entries(
-        Object.entries(
-          data.data.reduce((obj, el) => {
-            if (obj[el.data_somministrazione])
-              obj[el.data_somministrazione][el.fornitore] +=
-                el.prima_dose + el.seconda_dose
-            else {
-              const newObj = { ...defaultObj }
-              newObj[el.fornitore] = el.prima_dose + el.seconda_dose
-              obj[el.data_somministrazione] = newObj
-            }
-            return obj
-          }, {}),
-        ).reduce((obj, el, i) => {
-          if (i === 0 || i % 7 === 0) {
-            obj[el[0]] = el[1]
-            prevDate = el[0]
-          } else obj[prevDate] = sumObjectsByKey(obj[prevDate], el[1])
-          return obj
-        }, {}),
-      )
-    )
-  }, [data])
   return {
     data: {
       data: computedData,
@@ -350,14 +316,13 @@ export const useAdministeredAgeRegion = () => {
     isLoading,
     isSuccess,
   }
-} */
+}
 
 export const useSummaryData = () => {
   let { data, isLoading, isSuccess } = useGetSummaryQuery()
 
   // ADD EXTRA PROPS VALUES TO THE REGIONS OBJECT
-  /*   console.log('SUMMARY DATA   ', data)
-   */
+
   data = useMemo(() => {
     if (!data) return
     else
@@ -414,6 +379,108 @@ export const useSummaryData = () => {
   }, [data])
   return {
     data,
+    isLoading,
+    isSuccess,
+  }
+}
+
+export const useSuppliedData = () => {
+  const defaultObj = {
+    'Pfizer/BioNTech': 0,
+    Moderna: 0,
+    'Vaxzevria (AstraZeneca)': 0,
+    Janssen: 0,
+  }
+  const { data, isLoading, isSuccess } = useGetSuppliedQuery()
+  const computedData = useMemo(() => {
+    if (!data) return
+    else {
+      const temp = data.data.reduce((obj, el) => {
+        obj[el.fornitore] += el.numero_dosi
+        return obj
+      }, defaultObj)
+      return Object.entries({
+        ...temp,
+        total: Object.values(temp).reduce((sum, curr) => sum + curr, 0),
+      })
+    }
+  }, [data])
+
+  return {
+    data: {
+      data: computedData,
+      doseTypes: [
+        'Pfizer/BioNTech',
+        'Moderna',
+        'Vaxzevria (AstraZeneca)',
+        'Janssen',
+      ],
+    },
+    isLoading,
+  }
+}
+
+export const useAdministrationSitesData = () => {
+  const { data, isLoading, isSuccess } = useGetAdministrationSitesQuery()
+
+  const defaultObj = useMemo(() => {
+    const obj = {}
+    for (const region of regions)
+      obj[region] = {
+        total: 0,
+      }
+    return obj
+  }, [])
+
+  const total = useMemo(() => {
+    if (!data) return
+    else return data.data.length
+  }, [data])
+
+  const regionsData = useMemo(() => {
+    if (!data) return
+    else
+      return data.data.reduce((obj, curr) => {
+        if (obj[curr.nome_area])
+          obj[curr.nome_area] = {
+            ...obj[curr.nome_area],
+            total: obj[curr.nome_area].total + 1,
+          }
+        return obj
+      }, defaultObj)
+  }, [data])
+
+  return {
+    data: {
+      total,
+      regionsTotal: regionsData,
+      list: {
+        rows: data?.data.map((el) => ({
+          id: el.index,
+          region: el.nome_area,
+          site: el.denominazione_struttura,
+          type: el.tipologia,
+        })),
+
+        columns: [
+          {
+            field: 'region',
+            headerName: 'Regions',
+            headerClassName: 'grid-header',
+          },
+          {
+            field: 'site',
+            headerName: 'Administration Site',
+            headerClassName: 'grid-header',
+          },
+          {
+            field: 'type',
+            headerName: 'Type',
+            headerClassName: 'grid-header',
+          },
+        ],
+      },
+    },
     isLoading,
     isSuccess,
   }

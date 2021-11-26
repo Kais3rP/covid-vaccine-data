@@ -3,6 +3,7 @@ import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import Header from '../../components/reusable/Header'
 import Map from '../italymap/Map'
+import AdministrationSites from './AdministrationSites'
 import AnagraphicGraph from './AnagraphicGraph'
 import BadgeTextGraph from './BadgeTextGraph'
 import DeliveredGraph from './DeliveredGraph'
@@ -12,7 +13,7 @@ import {
   useTotalAdministrations,
 } from './hooks'
 
-import RegionsGraph from './RegionsGraph'
+import SummaryGraph from './SummaryGraph'
 import TextGraph from './TextGraph'
 import WeeklyGraph from './WeeklyGraph'
 
@@ -29,9 +30,10 @@ const Graphs = () => {
         Comp1={TotalAdditional}
         Comp2={TotalBooster}
       />
-      <RegionsGraph />
+      <SummaryGraph />
       <WeeklyGraph /> <AnagraphicGraph />
       <DeliveredGraph />
+      <AdministrationSites />
     </Box>
   )
 }

@@ -23,6 +23,12 @@ export const covidApi = createApi({
     getAdministered: builder.query({
       query: (name) => `somministrazioni-vaccini-latest.json`,
     }),
+    getSupplied: builder.query({
+      query: (name) => `consegne-vaccini-latest.json`,
+    }),
+    getAdministrationSites: builder.query({
+      query: (name) => `punti-somministrazione-tipologia.json`,
+    }),
   }),
 })
 
@@ -34,4 +40,6 @@ export const {
   useGetSummaryQuery,
   useGetAnagraphicDataQuery,
   useGetAnagraphicPopulationDataQuery,
+  useGetSuppliedQuery,
+  useGetAdministrationSitesQuery,
 } = covidApi

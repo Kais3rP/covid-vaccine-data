@@ -3,7 +3,7 @@ export const regions = [
   'Basilicata',
   'Calabria',
   'Campania',
-  'EmiliaRomagna',
+  'Emilia-Romagna',
   'Friuli-Venezia Giulia',
   'Lazio',
   'Liguria',
@@ -15,9 +15,9 @@ export const regions = [
   'Sardegna',
   'Sicilia',
   'Toscana',
-  'Trentino Alto Adige',
+  'Provincia Autonoma Trento',
   'Umbria',
-  "Valle d'Aosta",
+  "Valle d'Aosta / Vallée d'Aoste",
   'Veneto',
   'Provincia Autonoma Bolzano / Bozen',
 ]
@@ -88,7 +88,7 @@ export const regionsData = {
     population: 3668333,
   },
   trentinoaltoadige: {
-    label: 'Trentino-Alto-Adige',
+    label: 'Provincia Autonoma Trento',
     population: 1078460,
   },
   umbria: {
@@ -96,7 +96,7 @@ export const regionsData = {
     population: 865013,
   },
   valledaosta: {
-    label: "Valle d'Aosta",
+    label: "Valle d'Aosta / Vallée d'Aoste",
     population: 123895,
   },
   veneto: {

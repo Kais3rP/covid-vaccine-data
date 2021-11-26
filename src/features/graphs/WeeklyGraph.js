@@ -6,7 +6,7 @@ import Zoom from '@mui/material/Zoom'
 import Header from '../../components/reusable/Header'
 import people from '../../img/group_person.svg'
 import { Badge } from '../../components/reusable/Badge'
-import { Axis } from '../../components/reusable/Axis'
+import { DateAxis } from '../../components/reusable/Axis'
 import { useWidth } from '../../hooks'
 import { format } from 'date-fns'
 import HtmlTooltip from '../../components/reusable/HtmlTooltip'
@@ -87,10 +87,9 @@ const Graph = () => {
   const barWidth = 8
   const height = 500
   const barMargin = 52
-  const leftCounterMargin = -(_zoom * 43)
+  const leftCounterMargin = -_zoom * 45
   const { data, isLoading } = useAdministeredData()
-  console.log('WEEKLY', data)
-  const margin = (width - data?.data?.length * (barWidth + 2)) / 2 - 4
+  const margin = 100 /* (width - data?.data?.length * (barWidth + 2)) / 2 - 4 */
   return isLoading ? (
     'Loading...'
   ) : (
@@ -102,7 +101,7 @@ const Graph = () => {
         id="week-graph"
         data-name="week-graph"
         xmlns="http://www.w3.org/2000/svg"
-        viewBox={'50 140 680 350'}
+        viewBox={'0 140 680 350'}
       >
         <g transform={`translate(${margin} 0)`}>
           {data?.data.map((el, i) =>
@@ -139,13 +138,14 @@ const Graph = () => {
           )}
         </g>
 
-        <Axis
+        <DateAxis
           data={data?.data}
           containerWidth={width}
           containerHeight={height}
           zoom={_zoom}
           isZoomingLeft={isZoomingLeft}
           leftCounterMargin={leftCounterMargin}
+          margin={margin}
         />
       </svg>
       <Container>
@@ -166,8 +166,7 @@ const Graph = () => {
 }
 
 const BarTooltip = ({ data }) => {
-  /*   console.log('TOOLTIP DATA', data)
-   */ return (
+  return (
     <>
       {' '}
       <Typography color="inherit">{data.data.brand}</Typography>
@@ -183,7 +182,6 @@ const BarTooltip = ({ data }) => {
 }
 
 const Legend = ({ data }) => {
-  console.log('LEGEND', Object.entries(data))
   return (
     <Box sx={{ mt: 3 }}>
       {Object.entries(data).map((el) => (
