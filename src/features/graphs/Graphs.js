@@ -31,7 +31,8 @@ const Graphs = () => {
         Comp2={TotalBooster}
       />
       <SummaryGraph />
-      <WeeklyGraph /> <AnagraphicGraph />
+      <WeeklyGraph />
+      <AnagraphicGraph />
       <DeliveredGraph />
       <AdministrationSites />
     </Box>
@@ -42,6 +43,7 @@ export default Graphs
 
 const TotalOneDose = () => {
   const { data, isLoading } = useAdministeredSummaryData()
+  console.log("ADMINISTERED", data)
   return isLoading ? (
     'Loading...'
   ) : (

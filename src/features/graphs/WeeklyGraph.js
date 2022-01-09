@@ -107,6 +107,7 @@ const Graph = () => {
           {data?.data.map((el, i) =>
             data.brands.map((brand, j) => (
               <HtmlTooltip
+                key={brand}
                 TransitionComponent={Zoom}
                 followCursor={true}
                 title={

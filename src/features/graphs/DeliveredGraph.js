@@ -83,7 +83,7 @@ const Graph = ({ data, onClick, supplierSelected }) => {
           {data?.data
             .filter((el) => el[0] !== 'total')
             .map((el, i) => (
-              <g>
+              <g key={el[0]}>
                 <HtmlTooltip
                   TransitionComponent={Zoom}
                   followCursor={true}

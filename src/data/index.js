@@ -106,6 +106,7 @@ export const regionsData = {
 }
 
 export const ageRange = [
+  "05-11",
   '12-19',
   '20-29',
   '30-39',
@@ -144,6 +145,7 @@ export const brands = [
 ]
 
 export const ageRangePeople = {
+  "05-11": 5000000,
   '12-19': 4627514,
 
   '20-29': 6013709,

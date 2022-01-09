@@ -66,7 +66,7 @@ export const useTotalAdministrations = () => {
 export const useAnagraphicData = () => {
   /**
    *
-   *  COSTANTS
+   *  CONSTANTS
    *
    */
 
@@ -100,7 +100,7 @@ export const useAnagraphicData = () => {
     isSuccess: peopleIsSuccess,
   } = useGetAnagraphicPopulationDataQuery()
   let { data, isLoading, isSuccess } = useGetAdministeredQuery()
-
+  console.log("START DATA", totalData, peopleData)
   /**
    *
    *  MANIPULATED DATA
@@ -112,23 +112,23 @@ export const useAnagraphicData = () => {
     else
       return totalData.data
         .map((el, i) =>
-          i === 7
+          i === 8
             ? sumObjectsByKeyInclusive(
-                {
-                  ...el,
-                  fascia_anagrafica: '80+',
-                  people: ageRangePeople['80+'],
-                },
-                totalData.data[i + 1],
-              )
-            : {
+              {
                 ...el,
-                people: ageRangePeople[el.fascia_anagrafica],
+                fascia_anagrafica: '80+',
+                people: ageRangePeople['80+'],
               },
+              totalData.data[i + 1],
+            )
+            : {
+              ...el,
+              people: ageRangePeople[el.fascia_anagrafica],
+            },
         )
-        .filter((el, i) => i !== 8)
+        .filter((el, i) => i !== 9)
   }, [totalData])
-
+  console.log("TOTAL DATA", totalData)
   const agesArr = ageRange.map((el) => ({
     fascia_anagrafica: el,
     prima_dose: 0,
@@ -143,29 +143,29 @@ export const useAnagraphicData = () => {
     () =>
       peopleData && totalData
         ? regions.reduce((obj, el) => {
-            if (el === 'Total') obj[el] = totalData
-            else {
-              const _agesArr = agesArr.map((el2) => ({
-                ...el2,
-                people: peopleData.data.find((el3) => {
-                  return (
-                    (el === 'Provincia Autonoma Trento'
-                      ? el3.nome_area === 'P.A. Trento'
-                      : el === "Valle d'Aosta / Vallée d'Aoste"
+          if (el === 'Total') obj[el] = totalData
+          else {
+            const _agesArr = agesArr.map((el2) => ({
+              ...el2,
+              people: peopleData.data.find((el3) => {
+                return (
+                  (el === 'Provincia Autonoma Trento'
+                    ? el3.nome_area === 'P.A. Trento'
+                    : el === "Valle d'Aosta / Vallée d'Aoste"
                       ? el3.nome_area === "Valle d'Aosta"
                       : el === el3.nome_area) &&
-                    el3.fascia_anagrafica === el2.fascia_anagrafica
-                  )
-                })?.totale_popolazione,
-              }))
-              obj[el] = _agesArr
-            }
-            return obj
-          }, {})
+                  el3.fascia_anagrafica === el2.fascia_anagrafica
+                )
+              })?.totale_popolazione,
+            }))
+            obj[el] = _agesArr
+          }
+          return obj
+        }, {})
         : null,
     [peopleData, totalData],
   )
-
+  console.log("DATA", data, defaultObj)
   const computedData = useMemo(() => {
     if (!data || !defaultObj) return
     else {
@@ -178,17 +178,18 @@ export const useAnagraphicData = () => {
                 ? el2.fascia_anagrafica === '80+'
                 : el2.fascia_anagrafica === el.fascia_anagrafica
             })
-
-            obj[el.nome_area][idx].totale +=
-              el.prima_dose +
-              el.seconda_dose +
-              el.dose_aggiuntiva +
-              el.dose_booster
-            obj[el.nome_area][idx] = sumObjectsByKeySelective(
-              keys,
-              obj[el.nome_area][idx],
-              el,
-            )
+            if (obj[el.nome_area][idx]) {
+              obj[el.nome_area][idx].totale +=
+                el.prima_dose +
+                el.seconda_dose +
+                el.dose_aggiuntiva +
+                el.dose_booster
+              obj[el.nome_area][idx] = sumObjectsByKeySelective(
+                keys,
+                obj[el.nome_area][idx],
+                el,
+              )
+            }
           }
           return obj
         },
@@ -196,7 +197,7 @@ export const useAnagraphicData = () => {
       )
     }
   }, [data])
-
+  console.log("COMPUTED DATA", computedData)
   return {
     data: {
       data: computedData,

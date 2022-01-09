@@ -22,7 +22,7 @@ const AnagraphicGraph = () => {
   const currentRegion = useSelector((state) => state.map.region)
 
   const { data, isLoading } = useAnagraphicData()
-
+  console.log("ANAGRAPHIC DATA", data)
   const computedData = useMemo(() => {
     if (!data.data) return
     if (currentRegion && currentRegion?.type === 'age') {
@@ -35,7 +35,7 @@ const AnagraphicGraph = () => {
     if (ageRangeSelected)
       return computedData.data
         .find((el) => el.fascia_anagrafica === ageRangeSelected.range)
-        [ageRangeSelected.type.key].toLocaleString('en-US')
+      [ageRangeSelected.type.key].toLocaleString('en-US')
     else
       return computedData.data
         .reduce((sum, curr) => sum + curr.totale, 0)
@@ -47,21 +47,19 @@ const AnagraphicGraph = () => {
     return obj
   }, {})
 
-  return isLoading ? (
+  return isLoading || !data ? (
     'Loading...'
   ) : (
     <Box>
       <Header title={'Administrations following age ranges'} />
       <BadgeTextGraph
-        title={`Total administrations - ${
-          currentRegion && currentRegion.type === 'age'
-            ? currentRegion.id
-            : 'Italy'
-        } - ${
-          ageRangeSelected
+        title={`Total administrations - ${currentRegion && currentRegion.type === 'age'
+          ? currentRegion.id
+          : 'Italy'
+          } - ${ageRangeSelected
             ? ageRangeSelected.range + ' ' + ageRangeSelected.type.label
             : 'Total'
-        }`}
+          }`}
         data={totalNumber}
         badgePosition={'left'}
       />
@@ -116,52 +114,55 @@ const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
       >
         <g transform={`translate(${margin} 0) rotate(90)`}>
           {data?.data.map((el, i) => (
-            <g>
+            <g key={el.fascia_anagrafica}>
               <text
                 className="bar_text"
                 transform={`rotate(-90)`}
                 x={-(height + 40)}
                 y={barWidth / 2 + i * (barWidth + barMarginX)}
               >{`Range ${el.fascia_anagrafica}`}</text>
-              {data?.doseTypes.map((type, j) => (
-                <HtmlTooltip
-                  TransitionComponent={Zoom}
-                  followCursor={true}
-                  title={
-                    <BarTooltip
-                      data={{
-                        type: type.label,
-                        value: el[type.key]?.toLocaleString('en-US'),
-                        ageRange: el.fascia_anagrafica,
-                        percentage: ((el[type.key] * 100) / el.people).toFixed(
-                          1,
-                        ),
-                        total: el.people.toLocaleString('en-US'),
-                        isTotal: type.key === 'people',
-                      }}
+              {data?.doseTypes.map((type, j) => {
+                if (!el.people) console.log(el)
+                return (
+                  <HtmlTooltip
+                    TransitionComponent={Zoom}
+                    followCursor={true}
+                    title={
+                      <BarTooltip
+                        data={{
+                          type: type.label,
+                          value: el[type.key]?.toLocaleString('en-US'),
+                          ageRange: el.fascia_anagrafica,
+                          percentage: ((el[type.key] * 100) / el.people).toFixed(
+                            1,
+                          ),
+                          total: el.people.toLocaleString('en-US'),
+                          isTotal: type.key === 'people',
+                        }}
+                      />
+                    }
+                  >
+                    <rect
+                      onClick={() => onClick(el, type, i)}
+                      className="bar"
+                      width={barWidth}
+                      height={formatData(el[type.key], isRegionSelected && 'big')}
+                      fill={
+                        ageRangeSelected?.range === el.fascia_anagrafica &&
+                          ageRangeSelected?.type.key === type.key
+                          ? '#F00'
+                          : barColors[j]
+                      }
+                      x={i * (barWidth + barMarginX)}
+                      y={
+                        height -
+                        barMargin -
+                        formatData(el[type.key], isRegionSelected && 'big')
+                      }
                     />
-                  }
-                >
-                  <rect
-                    onClick={() => onClick(el, type, i)}
-                    className="bar"
-                    width={barWidth}
-                    height={formatData(el[type.key], isRegionSelected && 'big')}
-                    fill={
-                      ageRangeSelected?.range === el.fascia_anagrafica &&
-                      ageRangeSelected?.type.key === type.key
-                        ? '#F00'
-                        : barColors[j]
-                    }
-                    x={i * (barWidth + barMarginX)}
-                    y={
-                      height -
-                      barMargin -
-                      formatData(el[type.key], isRegionSelected && 'big')
-                    }
-                  />
-                </HtmlTooltip>
-              ))}
+                  </HtmlTooltip>
+                )
+              })}
             </g>
           ))}
         </g>
