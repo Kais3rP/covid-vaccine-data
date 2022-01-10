@@ -73,8 +73,7 @@ export const useAnagraphicData = () => {
   const keys = [
     "prima_dose",
     "seconda_dose",
-    "dose_booster",
-    "dose_aggiuntiva",
+    "dose_addizionale_booster",
     "fascia_anagrafica",
     "people",
     "totale",
@@ -103,7 +102,7 @@ export const useAnagraphicData = () => {
     isSuccess: peopleIsSuccess,
   } = useGetAnagraphicPopulationDataQuery();
   let { data, isLoading, isSuccess } = useGetAdministeredQuery();
-  console.log("START DATA", totalData, peopleData);
+
   /**
    *
    *  MANIPULATED DATA
@@ -131,13 +130,12 @@ export const useAnagraphicData = () => {
         )
         .filter((el, i) => i !== 9);
   }, [totalData]);
-  console.log("TOTAL DATA", totalData);
+
   const agesArr = ageRange.map((el) => ({
     fascia_anagrafica: el,
     prima_dose: 0,
     seconda_dose: 0,
-    dose_booster: 0,
-    dose_aggiuntiva: 0,
+    dose_addizionale_booster: 0,
     people: 0,
     totale: 0,
   }));
@@ -168,7 +166,7 @@ export const useAnagraphicData = () => {
         : null,
     [peopleData, totalData]
   );
-  console.log("DATA", data, defaultObj);
+
   const computedData = useMemo(() => {
     if (!data || !defaultObj) return;
     else {
@@ -183,10 +181,7 @@ export const useAnagraphicData = () => {
             });
             if (obj[el.nome_area][idx]) {
               obj[el.nome_area][idx].totale +=
-                el.prima_dose +
-                el.seconda_dose +
-                el.dose_aggiuntiva +
-                el.dose_booster;
+                el.prima_dose + el.seconda_dose + el.dose_addizionale_booster;
               obj[el.nome_area][idx] = sumObjectsByKeySelective(
                 keys,
                 obj[el.nome_area][idx],
@@ -200,15 +195,14 @@ export const useAnagraphicData = () => {
       );
     }
   }, [data]);
-  console.log("COMPUTED DATA", computedData);
   return {
     data: {
       data: computedData,
       doseTypes: [
         { key: "people", label: "Total" },
         { key: "prima_dose", label: "First dose" },
-        { key: "seconda_dose", label: "Second/Single shot dose" },
-        { key: "dose_booster", label: "Booster dose" },
+        { key: "seconda_dose", label: "Second dose" },
+        { key: "dose_addizionale_booster", label: "Third dose" },
       ],
     },
     isLoading,
@@ -218,7 +212,6 @@ export const useAnagraphicData = () => {
 
 export const useAdministeredSummaryData = () => {
   const { data, isLoading, isSuccess } = useGetAdministeredSummaryQuery();
-  console.log("ACTUAL CHECK", data);
   const firstDoseTotal = useMemo(() => {
     return data?.data.reduce((acc, curr) => acc + curr.prima_dose, 0);
   }, [data]);
@@ -279,7 +272,7 @@ export const useAdministeredSummaryData = () => {
 
 export const useAdministeredData = () => {
   const { data, isLoading, isSuccess } = useGetAdministeredQuery();
-  console.log("ADMINISTERED ACTUAL", data);
+
   const computedData = useMemo(() => {
     const defaultObj = {
       "Pfizer/BioNTech": 0,
@@ -399,12 +392,10 @@ export const useSummaryData = () => {
 };
 
 export const useSuppliedData = () => {
-  const defaultObj = {
-    "Pfizer/BioNTech": 0,
-    Moderna: 0,
-    "Vaxzevria (AstraZeneca)": 0,
-    Janssen: 0,
-  };
+  const defaultObj = brands.reduce((o, curr) => {
+    o[curr.key] = 0;
+    return o;
+  }, {});
   const { data, isLoading, isSuccess } = useGetSuppliedQuery();
   const computedData = useMemo(() => {
     if (!data) return;
@@ -423,12 +414,7 @@ export const useSuppliedData = () => {
   return {
     data: {
       data: computedData,
-      doseTypes: [
-        "Pfizer/BioNTech",
-        "Moderna",
-        "Vaxzevria (AstraZeneca)",
-        "Janssen",
-      ],
+      brands,
     },
     isLoading,
   };

@@ -13,7 +13,7 @@ import HtmlTooltip from "../../components/reusable/HtmlTooltip";
 import { brands, barColors } from "../../data";
 
 const legendData = brands.reduce((obj, el, i) => {
-  obj[el] = barColors[i];
+  obj[el.label] = barColors[i];
   return obj;
 }, {});
 
@@ -84,7 +84,7 @@ const Graph = () => {
   const leftCounterMargin = -_zoom * 45;
   const { data, isLoading } = useAdministeredData();
   const margin = 100; /* (width - data?.data?.length * (barWidth + 2)) / 2 - 4 */
-  console.log("ADMINISTERED ACTUAL WEEKLY", data);
+
   return isLoading ? (
     "Loading..."
   ) : (
@@ -102,7 +102,7 @@ const Graph = () => {
           {data?.data.map((el, i) =>
             data.brands.map((brand, j) => (
               <HtmlTooltip
-                key={brand}
+                key={brand.key}
                 TransitionComponent={Zoom}
                 followCursor={true}
                 title={
@@ -110,8 +110,8 @@ const Graph = () => {
                     data={{
                       dateRange: formatRange(el[0]),
                       data: {
-                        brand: brand,
-                        value: el[1][brand],
+                        brand: brand.label,
+                        value: el[1][brand.key],
                       },
                     }}
                   />
@@ -120,7 +120,7 @@ const Graph = () => {
                 <rect
                   className="bar"
                   width={barWidth + _zoom}
-                  height={formatData(el[1][data.brands[j]])}
+                  height={formatData(el[1][data.brands[j].key])}
                   fill={barColors[j]}
                   x={
                     isZoomingLeft
@@ -130,8 +130,8 @@ const Graph = () => {
                   y={
                     height -
                     barMargin -
-                    formatData(el[1][data.brands[j]]) -
-                    formatData(el[1][data.brands[j + 1]] || 0)
+                    formatData(el[1][data.brands[j]?.key]) -
+                    formatData(el[1][data.brands[j + 1]?.key] || 0)
                   }
                 />
               </HtmlTooltip>
@@ -167,7 +167,6 @@ const Graph = () => {
 };
 
 const BarTooltip = ({ data }) => {
-  console.log("BRAND", data);
   return (
     <>
       {" "}
@@ -203,7 +202,7 @@ const Legend = ({ data }) => {
           />
 
           <Typography variant="h7">
-            {el[0] === "Pfizer Pediatrico" ? "Pediatric Pfizer" : el[0]}
+            {el[0]}
           </Typography>
         </Box>
       ))}

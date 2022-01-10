@@ -7,12 +7,7 @@ import AdministrationSites from "./AdministrationSites";
 import AnagraphicGraph from "./AnagraphicGraph";
 import BadgeTextGraph from "./BadgeTextGraph";
 import DeliveredGraph from "./DeliveredGraph";
-import {
-  useAdministeredSummaryData,
-  useAnagraphicData,
-  useTotalAdministrations,
-} from "./hooks";
-
+import { useAdministeredSummaryData } from "./hooks";
 import SummaryGraph from "./SummaryGraph";
 import TextGraph from "./TextGraph";
 import WeeklyGraph from "./WeeklyGraph";
@@ -43,7 +38,7 @@ export default Graphs;
 
 const TotalOneDose = () => {
   const { data, isLoading } = useAdministeredSummaryData();
-  console.log("ADMINISTERED", data);
+
   return isLoading ? (
     "Loading..."
   ) : (
@@ -98,7 +93,10 @@ const TotalFourDoses = () => {
         {" "}
         4 doses
       </Typography>
-      <Typography variant="h4"> {data.fourthDose?.total || "Campaign is not started"}</Typography>
+      <Typography variant="h4">
+        {" "}
+        {data.fourthDose?.total || "Campaign is not started"}
+      </Typography>
     </>
   );
 };

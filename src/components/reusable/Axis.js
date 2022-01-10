@@ -1,16 +1,16 @@
-import * as d3 from 'd3'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { format } from 'date-fns'
+import * as d3 from "d3";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { format } from "date-fns";
 
 export const ScaleAxis = ({ data }) => {
   const ticks = useMemo(() => {
-    const xScale = d3.scaleLinear().domain(data.domain).range(data.range)
-    /*     console.log('SCALE', xScale)
-     */ return xScale.ticks().map((value) => ({
+    const xScale = d3.scaleLinear().domain(data.domain).range(data.range);
+    console.log("SCALE", data);
+    return xScale.ticks().map((value) => ({
       value,
       xOffset: xScale(value),
-    }))
-  }, [])
+    }));
+  }, []);
   /*   console.log('TICKS', ticks)
    */ return (
     <svg>
@@ -21,9 +21,9 @@ export const ScaleAxis = ({ data }) => {
           <text
             key={value}
             style={{
-              fontSize: '10px',
-              textAnchor: 'middle',
-              transform: 'translateY(20px)',
+              fontSize: "10px",
+              textAnchor: "middle",
+              transform: "translateY(20px)",
             }}
           >
             {value}
@@ -31,8 +31,8 @@ export const ScaleAxis = ({ data }) => {
         </g>
       ))}
     </svg>
-  )
-}
+  );
+};
 
 export const DateAxis = ({
   data,
@@ -43,16 +43,16 @@ export const DateAxis = ({
   leftCounterMargin,
   margin,
 }) => {
-  const tickWidth = 10
-  const ticksNumber = data.length
+  const tickWidth = 10;
+  const ticksNumber = data.length;
   const ticks = useMemo(() => {
     return data.map((el, i) => ({
-      value: format(new Date(el[0]), 'dd/MM'),
+      value: format(new Date(el[0]), "dd/MM"),
       xOffset: isZoomingLeft
         ? leftCounterMargin + i * (10 + zoom) + zoom / 2
         : i * (10 + zoom) + zoom / 2,
-    }))
-  }, [data, zoom, isZoomingLeft])
+    }));
+  }, [data, zoom, isZoomingLeft]);
 
   /* const margin =
       (containerWidth - tickWidth * ticksNumber) / 2  tickWidth / 2 -1 */
@@ -71,10 +71,10 @@ export const DateAxis = ({
           <text
             key={value}
             style={{
-              fontSize: '8px',
-              textAnchor: 'middle',
-              transform: 'translateY(20px) translateX(-2px) rotate(90deg)',
-              fill: '#DDD',
+              fontSize: "8px",
+              textAnchor: "middle",
+              transform: "translateY(20px) translateX(-2px) rotate(90deg)",
+              fill: "#DDD",
             }}
           >
             {value}
@@ -82,8 +82,8 @@ export const DateAxis = ({
         </g>
       ))}
     </>
-  )
-}
+  );
+};
 
 export const RandomAxis = ({
   data,
@@ -92,14 +92,14 @@ export const RandomAxis = ({
   leftCounterMargin = 0,
   margin,
 }) => {
-  const tickWidth = 10
-  const ticksNumber = data.length
+  const tickWidth = 10;
+  const ticksNumber = data.length;
   const ticks = useMemo(() => {
     return data.map((el, i) => ({
       value: el,
       xOffset: leftCounterMargin + i * tickWidth,
-    }))
-  }, [data])
+    }));
+  }, [data]);
 
   /*   console.log('TICKS', ticks, 'WIDTH', containerWidth, 'MARGIN', margin)
    */ return (
@@ -113,10 +113,10 @@ export const RandomAxis = ({
           <text
             key={value}
             style={{
-              fontSize: '8px',
-              textAnchor: 'middle',
-              transform: 'translateY(20px) translateX(-2px) rotate(90deg)',
-              fill: '#DDD',
+              fontSize: "8px",
+              textAnchor: "middle",
+              transform: "translateY(20px) translateX(-2px) rotate(90deg)",
+              fill: "#DDD",
             }}
           >
             {value}
@@ -124,8 +124,8 @@ export const RandomAxis = ({
         </g>
       ))}
     </>
-  )
-}
+  );
+};
 
 export const RandomAxisHorizontal = ({
   data,
@@ -133,16 +133,16 @@ export const RandomAxisHorizontal = ({
   xGap = 2,
   margin,
 }) => {
-  /*   console.log('AXIS DATA', data)
-   */ const tickWidth = xGap
-  const ticksNumber = data.length
+    console.log('AXIS DATA', data)
+   const tickWidth = xGap;
+  const ticksNumber = data.length;
   const ticks = useMemo(() => {
     return data.map((el, i) => ({
       value: el,
       xOffset: i * tickWidth + 75,
-    }))
-  }, [data])
-  margin = margin - xGap / 4 - 5
+    }));
+  }, [data]);
+  margin = margin - xGap / 4 - 5;
   return (
     <>
       <line
@@ -172,10 +172,10 @@ export const RandomAxisHorizontal = ({
           <text
             key={value}
             style={{
-              fontSize: '8px',
-              textAnchor: 'middle',
+              fontSize: "8px",
+              textAnchor: "middle",
               transform: `translateY(20px) translateX(0px)`,
-              fill: 'currentColor',
+              fill: "currentColor",
             }}
           >
             {value}
@@ -183,5 +183,5 @@ export const RandomAxisHorizontal = ({
         </g>
       ))}
     </>
-  )
-}
+  );
+};

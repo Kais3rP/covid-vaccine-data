@@ -140,32 +140,25 @@ export const barColors = [
   "#546e7a",
   "#90a4ae",
   "#eceff1",
-  "#000",
+  "#bbbbbb",
 ];
 
 export const brands = [
-  "Pfizer/BioNTech",
-  "Moderna",
-  "Vaxzevria (AstraZeneca)",
-  "Janssen",
-  "Pfizer Pediatrico",
+  { key: "Pfizer/BioNTech", label: "Pfizer" },
+  { key: "Moderna", label: "Moderna" },
+  { key: "Vaxzevria (AstraZeneca)", label: "Astrazeneca" },
+  { key: "Janssen", label: "Janssen" },
+  { key: "Pfizer Pediatrico", label: "Pediatric Pfizer" },
 ];
 
 export const ageRangePeople = {
-  "05-11": 5000000,
+  "05-11": 3656457,
   "12-19": 4627514,
-
   "20-29": 6013709,
-
   "30-39": 6794332,
-
   "40-49": 8786975,
-
   "50-59": 9651130,
-
   "60-69": 7553486,
-
   "70-79": 6019293,
-
   "80+": 4563500,
 };

@@ -1,44 +1,43 @@
-import { Box, Container, Grid, Typography } from '@mui/material'
-import { useMemo } from 'react'
-import { useSelector } from 'react-redux'
-import Map from '../italymap/Map'
-import { useSummaryData } from './hooks'
-import List from './List'
+import { Box, Container, Grid, Typography } from "@mui/material";
+import { useMemo } from "react";
+import { useSelector } from "react-redux";
+import Map from "../italymap/Map";
+import { useSummaryData } from "./hooks";
+import List from "./List";
 
 const SummaryGraph = () => {
   let {
     data: summaryData,
     isLoading: summaryIsLoading,
     isSuccess: summaryIsSuccess,
-  } = useSummaryData()
-  const currentRegion = useSelector((state) => state.map.region)
+  } = useSummaryData();
+  const currentRegion = useSelector((state) => state.map.region);
   summaryData = useMemo(() => {
-    return currentRegion && currentRegion.type === 'summary'
+    return currentRegion && currentRegion.type === "summary"
       ? {
           columns: summaryData.columns,
           rows: summaryData.rows.filter((el) => el.region === currentRegion.id),
         }
-      : summaryData
-  }, [currentRegion, summaryData])
-  console.log('REGION', currentRegion, 'SUMMARY', summaryData)
+      : summaryData;
+  }, [currentRegion, summaryData]);
 
   return summaryIsLoading || !summaryIsSuccess ? (
-    'Loading...'
+    "Loading..."
   ) : (
     <Box sx={{ mt: 3 }}>
-      {' '}
-      <Typography color={'text.secondary'} variant={'h5'} align={'center'}>
-        Total administrated compared to delivered doses{' '}
-      </Typography>{' '}
-      <Grid container sx={{ mt: 3, display: 'flex' }}>
+      {" "}
+      <Typography color={"text.secondary"} variant={"h5"} align={"center"}>
+        Total administrated compared to delivered doses{" "}
+      </Typography>{" "}
+      <Grid container sx={{ mt: 3, display: "flex" }}>
         <Grid item xs={12} md={6}>
-          {' '}
+          {" "}
           <List data={summaryData} />
         </Grid>
         <Grid item xs={12} md={6}>
-          {' '}
+          {" "}
           <Map
-            type={'summary'}
+            type={"summary"}
             data={
               currentRegion
                 ? summaryData?.rows[0]?.administered
@@ -48,7 +47,7 @@ const SummaryGraph = () => {
         </Grid>
       </Grid>
     </Box>
-  )
-}
+  );
+};
 
-export default SummaryGraph
+export default SummaryGraph;
