@@ -1,34 +1,34 @@
-import { Box, Container, Grid, Typography } from '@mui/material'
-import { useMemo } from 'react'
-import { useSelector } from 'react-redux'
-import Header from '../../components/reusable/Header'
-import Map from '../italymap/Map'
-import AdministrationSites from './AdministrationSites'
-import AnagraphicGraph from './AnagraphicGraph'
-import BadgeTextGraph from './BadgeTextGraph'
-import DeliveredGraph from './DeliveredGraph'
+import { Box, Container, Grid, Typography } from "@mui/material";
+import { useMemo } from "react";
+import { useSelector } from "react-redux";
+import Header from "../../components/reusable/Header";
+import Map from "../italymap/Map";
+import AdministrationSites from "./AdministrationSites";
+import AnagraphicGraph from "./AnagraphicGraph";
+import BadgeTextGraph from "./BadgeTextGraph";
+import DeliveredGraph from "./DeliveredGraph";
 import {
   useAdministeredSummaryData,
   useAnagraphicData,
   useTotalAdministrations,
-} from './hooks'
+} from "./hooks";
 
-import SummaryGraph from './SummaryGraph'
-import TextGraph from './TextGraph'
-import WeeklyGraph from './WeeklyGraph'
+import SummaryGraph from "./SummaryGraph";
+import TextGraph from "./TextGraph";
+import WeeklyGraph from "./WeeklyGraph";
 
 const Graphs = () => {
   return (
     <Box>
       <TextGraph
-        title="Totale somministrazioni"
+        title="First and second doises"
         Comp1={TotalOneDose}
         Comp2={TotalTwoDoses}
       />
       <TextGraph
-        title="Dosi addizionali"
-        Comp1={TotalAdditional}
-        Comp2={TotalBooster}
+        title="Third and fourth doses"
+        Comp1={TotalThreeDoses}
+        Comp2={TotalFourDoses}
       />
       <SummaryGraph />
       <WeeklyGraph />
@@ -36,21 +36,21 @@ const Graphs = () => {
       <DeliveredGraph />
       <AdministrationSites />
     </Box>
-  )
-}
+  );
+};
 
-export default Graphs
+export default Graphs;
 
 const TotalOneDose = () => {
-  const { data, isLoading } = useAdministeredSummaryData()
-  console.log("ADMINISTERED", data)
+  const { data, isLoading } = useAdministeredSummaryData();
+  console.log("ADMINISTERED", data);
   return isLoading ? (
-    'Loading...'
+    "Loading..."
   ) : (
     <>
-      {' '}
-      <Typography variant="h5" sx={{ mt: '3rem' }}>
-        {' '}
+      {" "}
+      <Typography variant="h5" sx={{ mt: "3rem" }}>
+        {" "}
         1 dose
       </Typography>
       <Typography variant="h4"> {data.firstDose.total}</Typography>
@@ -62,17 +62,17 @@ const TotalOneDose = () => {
         {data.firstDose.percentageOnOver12}% of people over 12
       </Typography>
     </>
-  )
-}
+  );
+};
 
 const TotalTwoDoses = () => {
-  const { data, isLoading } = useAdministeredSummaryData()
+  const { data, isLoading } = useAdministeredSummaryData();
   return isLoading ? (
-    'Loading...'
+    "Loading..."
   ) : (
     <>
-      <Typography variant="h5" sx={{ mt: '3rem' }}>
-        {' '}
+      <Typography variant="h5" sx={{ mt: "3rem" }}>
+        {" "}
         2 doses
       </Typography>
       <Typography variant="h4"> {data.secondDose.total}</Typography>
@@ -85,35 +85,35 @@ const TotalTwoDoses = () => {
         {data.secondDose.percentageOnOver12}% of people over 12
       </Typography>
     </>
-  )
-}
+  );
+};
 
-const TotalAdditional = () => {
-  const { data, isLoading } = useAdministeredSummaryData()
+const TotalFourDoses = () => {
+  const { data, isLoading } = useAdministeredSummaryData();
   return isLoading ? (
-    'Loading...'
+    "Loading..."
   ) : (
     <>
-      <Typography variant="h5" sx={{ mt: '3rem' }}>
-        {' '}
-        Additional dose
+      <Typography variant="h5" sx={{ mt: "3rem" }}>
+        {" "}
+        4 doses
       </Typography>
-      <Typography variant="h4"> {data.additionalDose.total}</Typography>
+      <Typography variant="h4"> {data.fourthDose?.total || "Campaign is not started"}</Typography>
     </>
-  )
-}
+  );
+};
 
-const TotalBooster = () => {
-  const { data, isLoading } = useAdministeredSummaryData()
+const TotalThreeDoses = () => {
+  const { data, isLoading } = useAdministeredSummaryData();
   return isLoading ? (
-    'Loading...'
+    "Loading..."
   ) : (
     <>
-      <Typography variant="h5" sx={{ mt: '3rem' }}>
-        {' '}
-        Booster dose
+      <Typography variant="h5" sx={{ mt: "3rem" }}>
+        {" "}
+        3 doses
       </Typography>
-      <Typography variant="h4"> {data.boosterDose.total}</Typography>
+      <Typography variant="h4"> {data.thirdDose.total}</Typography>
     </>
-  )
-}
+  );
+};
