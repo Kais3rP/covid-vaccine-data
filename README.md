@@ -5,7 +5,7 @@
 
 ## Online Page:
 
-[it-covid-data.netlify.app](it-covid-data.netlify.app)
+[https://it-covid-data.netlify.app](https://it-covid-data.netlify.app)
 
 ## License
 
