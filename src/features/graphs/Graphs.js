@@ -1,22 +1,22 @@
-import { Box, Container, Grid, Typography } from "@mui/material";
-import { useMemo } from "react";
-import { useSelector } from "react-redux";
-import Header from "../../components/reusable/Header";
-import Map from "../italymap/Map";
-import AdministrationSites from "./AdministrationSites";
-import AnagraphicGraph from "./AnagraphicGraph";
-import BadgeTextGraph from "./BadgeTextGraph";
-import DeliveredGraph from "./DeliveredGraph";
-import { useAdministeredSummaryData } from "./hooks";
-import SummaryGraph from "./SummaryGraph";
-import TextGraph from "./TextGraph";
-import WeeklyGraph from "./WeeklyGraph";
+import { Box, Container, Grid, Typography } from '@mui/material'
+import { useMemo } from 'react'
+import { useSelector } from 'react-redux'
+import Header from '../../components/reusable/Header'
+import Map from '../italymap/Map'
+import AdministrationSites from './AdministrationSites'
+import AnagraphicGraph from './AnagraphicGraph'
+import BadgeTextGraph from './BadgeTextGraph'
+import DeliveredGraph from './DeliveredGraph'
+import { useAdministeredSummaryData } from './hooks'
+import SummaryGraph from './SummaryGraph'
+import TextGraph from './TextGraph'
+import WeeklyGraph from './WeeklyGraph'
 
 const Graphs = () => {
   return (
     <Box>
       <TextGraph
-        title="First and second doises"
+        title="First and second doses"
         Comp1={TotalOneDose}
         Comp2={TotalTwoDoses}
       />
@@ -31,21 +31,19 @@ const Graphs = () => {
       <DeliveredGraph />
       <AdministrationSites />
     </Box>
-  );
-};
+  )
+}
 
-export default Graphs;
+export default Graphs
 
 const TotalOneDose = () => {
-  const { data, isLoading } = useAdministeredSummaryData();
+  const { data, isLoading } = useAdministeredSummaryData()
 
   return isLoading ? (
-    "Loading..."
+    'Loading...'
   ) : (
     <>
-      {" "}
-      <Typography variant="h5" sx={{ mt: "3rem" }}>
-        {" "}
+      <Typography variant="h5" sx={{ mt: '3rem' }}>
         1 dose
       </Typography>
       <Typography variant="h4"> {data.firstDose.total}</Typography>
@@ -57,17 +55,17 @@ const TotalOneDose = () => {
         {data.firstDose.percentageOnOver12}% of people over 12
       </Typography>
     </>
-  );
-};
+  )
+}
 
 const TotalTwoDoses = () => {
-  const { data, isLoading } = useAdministeredSummaryData();
+  const { data, isLoading } = useAdministeredSummaryData()
   return isLoading ? (
-    "Loading..."
+    'Loading...'
   ) : (
     <>
-      <Typography variant="h5" sx={{ mt: "3rem" }}>
-        {" "}
+      <Typography variant="h5" sx={{ mt: '3rem' }}>
+        {' '}
         2 doses
       </Typography>
       <Typography variant="h4"> {data.secondDose.total}</Typography>
@@ -80,38 +78,38 @@ const TotalTwoDoses = () => {
         {data.secondDose.percentageOnOver12}% of people over 12
       </Typography>
     </>
-  );
-};
+  )
+}
 
 const TotalFourDoses = () => {
-  const { data, isLoading } = useAdministeredSummaryData();
+  const { data, isLoading } = useAdministeredSummaryData()
   return isLoading ? (
-    "Loading..."
+    'Loading...'
   ) : (
     <>
-      <Typography variant="h5" sx={{ mt: "3rem" }}>
-        {" "}
+      <Typography variant="h5" sx={{ mt: '3rem' }}>
+        {' '}
         4 doses
       </Typography>
       <Typography variant="h4">
-        {" "}
-        {data.fourthDose?.total || "Campaign is not started"}
+        {' '}
+        {data.fourthDose?.total || 'Campaign is not started'}
       </Typography>
     </>
-  );
-};
+  )
+}
 
 const TotalThreeDoses = () => {
-  const { data, isLoading } = useAdministeredSummaryData();
+  const { data, isLoading } = useAdministeredSummaryData()
   return isLoading ? (
-    "Loading..."
+    'Loading...'
   ) : (
     <>
-      <Typography variant="h5" sx={{ mt: "3rem" }}>
-        {" "}
+      <Typography variant="h5" sx={{ mt: '3rem' }}>
+        {' '}
         3 doses
       </Typography>
       <Typography variant="h4"> {data.thirdDose.total}</Typography>
     </>
-  );
-};
+  )
+}

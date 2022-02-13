@@ -8,8 +8,8 @@ import {
 } from '@mui/material'
 import React from 'react'
 import Copyright from '../copyright/Copyright'
-import CameraIcon from '@mui/icons-material/CameraAlt'
-import badge from '../../img/coccarda.svg'
+import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety'
+import coccarda from '../../img/coccarda.svg'
 import { Badge } from '../reusable/Badge'
 
 const Layout = ({ children, ...props }) => {
@@ -17,9 +17,9 @@ const Layout = ({ children, ...props }) => {
     <Box {...props}>
       <AppBar position="relative">
         <Toolbar>
-          <CameraIcon sx={{ mr: 2 }} />
+          <HealthAndSafetyIcon sx={{ mr: 2 }} />
           <Typography variant="h6" color="inherit" noWrap>
-            Covid Data
+            SARS-CoV2 Vaccine Italian Data
           </Typography>
         </Toolbar>
       </AppBar>
@@ -40,7 +40,7 @@ const Layout = ({ children, ...props }) => {
           }}
           maxWidth="false"
         >
-          <Badge src={badge} alt="coccarda" width={6} />
+          <Badge src={coccarda} alt="coccarda" width={6} />
 
           <Typography
             component="h1"
