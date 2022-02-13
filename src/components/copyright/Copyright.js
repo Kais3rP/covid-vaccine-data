@@ -1,11 +1,11 @@
 import { Link, Typography } from '@mui/material'
 
-const Copyright = () => {
+const Copyright = ({ name, url }) => {
   return (
     <Typography variant="body2" color="text.secondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
+      <Link color="inherit" href={url}>
+        {name}
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}

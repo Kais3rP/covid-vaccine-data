@@ -12,6 +12,8 @@ import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety'
 import coccarda from '../../img/coccarda.svg'
 import { Badge } from '../reusable/Badge'
 
+const URL = 'http://mc-polonara.vercel.app/'
+
 const Layout = ({ children, ...props }) => {
   return (
     <Box {...props}>
@@ -51,26 +53,6 @@ const Layout = ({ children, ...props }) => {
           >
             Report Vaccini Anti COVID-19
           </Typography>
-          {/*
-          <Typography
-            variant="h5"
-            align="center"
-            color="text.secondary"
-            paragraph
-          >
-            Something short and leading about the collection below—its contents,
-            the creator, etc. Make it short and sweet, but not too short so
-            folks don&apos;t simply skip over it entirely.
-          </Typography> */}
-          {/*   <Stack
-              sx={{ pt: 4 }}
-              direction="row"
-              spacing={2}
-              justifyContent="center"
-            >
-              <Button variant="contained">Main call to action</Button>
-              <Button variant="outlined">Secondary action</Button>
-            </Stack> */}
         </Container>
       </Box>
 
@@ -80,18 +62,26 @@ const Layout = ({ children, ...props }) => {
       </Container>
       {/* Footer */}
       <Box sx={{ bgcolor: 'background.paper', p: 6 }} component="footer">
-        <Typography variant="h6" align="center" gutterBottom>
-          Footer
-        </Typography>
         <Typography
           variant="subtitle1"
           align="center"
           color="text.secondary"
           component="p"
         >
-          Something here to give the footer a purpose!
+          Built and maintained by
+          <Box sx={{ display: 'inline', ml: 1, mr: 1 }}>
+            {' '}
+            <a
+              className=""
+              href="http://mc-polonara.vercel.app/"
+              rel="noreferrer noopener"
+            >
+              Cesare Polonara
+            </a>
+          </Box>
+          !
         </Typography>
-        <Copyright />
+        <Copyright name={"Cesare Polonara"}url={URL} />
       </Box>
     </Box>
   )
