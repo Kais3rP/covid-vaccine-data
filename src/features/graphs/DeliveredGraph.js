@@ -45,7 +45,7 @@ const DeliveredGraph = () => {
               )}`
             : data?.data
                 .find((el) => el[0] === "total")[1]
-                .toLocaleString("en-US")
+                .toLocaleString('it')
         }
         badgePosition={"right"}
       />
@@ -92,7 +92,7 @@ const Graph = ({ data, onClick, supplierSelected }) => {
                     <BarTooltip
                       data={{
                         type: el[0],
-                        value: el[1].toLocaleString("en-US"),
+                        value: el[1].toLocaleString('it'),
                       }}
                     />
                   }
@@ -115,7 +115,7 @@ const Graph = ({ data, onClick, supplierSelected }) => {
                   x={i * (barWidth + barXMargin) - 5}
                   y={height - barMargin - formatData(el[1]) - 10}
                 >
-                  {el[1].toLocaleString("en-US")}
+                  {el[1].toLocaleString('it')}
                 </text>
               </g>
             ))}

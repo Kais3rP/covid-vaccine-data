@@ -35,11 +35,11 @@ const AnagraphicGraph = () => {
     if (ageRangeSelected)
       return computedData.data
         .find((el) => el.fascia_anagrafica === ageRangeSelected.range)
-        [ageRangeSelected.type.key].toLocaleString("en-US");
+        [ageRangeSelected.type.key].toLocaleString('it');
     else
       return computedData.data
         .reduce((sum, curr) => sum + curr.totale, 0)
-        .toLocaleString("en-US");
+        .toLocaleString('it');
   }, [computedData]);
 
   const legendData = computedData?.doseTypes.reduce((obj, el, i) => {
@@ -132,12 +132,12 @@ const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
                     <BarTooltip
                       data={{
                         type: type.label,
-                        value: el[type.key]?.toLocaleString("en-US"),
+                        value: el[type.key]?.toLocaleString('it'),
                         ageRange: el.fascia_anagrafica,
                         percentage: ((el[type.key] * 100) / el.people).toFixed(
                           1
                         ),
-                        total: el.people.toLocaleString("en-US"),
+                        total: el.people.toLocaleString('it'),
                         isTotal: type.key === "people",
                       }}
                     />

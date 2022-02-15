@@ -42,7 +42,7 @@ export const useTotalDelivered = () => {
     else
       return data.data
         .reduce((acc, curr) => acc + curr.dosi_consegnate, 0)
-        .toLocaleString("en-US");
+        .toLocaleString('it');
   }, [data]);
 
   return { data: total, isLoading };
@@ -57,7 +57,7 @@ export const useTotalAdministrations = () => {
     else
       return data.data
         .reduce((acc, curr) => acc + curr.dosi_somministrate, 0)
-        .toLocaleString("en-US");
+        .toLocaleString('it');
   }, [data]);
 
   return { data: total, isLoading };
@@ -243,26 +243,26 @@ export const useAdministeredSummaryData = () => {
   return {
     data: data && {
       firstDose: {
-        total: firstDoseTotal.toLocaleString("en-US"),
-        totalPlusNatural: firstDosePlusNaturalImmunity.toLocaleString("en-US"),
+        total: firstDoseTotal.toLocaleString('it'),
+        totalPlusNatural: firstDosePlusNaturalImmunity.toLocaleString('it'),
         percentageOnTotal: ((firstDoseTotal * 100) / totalPopulation).toFixed(
           0
         ),
         percentageOnOver12: ((firstDoseTotal * 100) / over12).toFixed(0),
       },
       secondDose: {
-        total: secondDoseTotal.toLocaleString("en-US"),
-        totalPlusNatural: secondDosePlusNaturalImmunity.toLocaleString("en-US"),
+        total: secondDoseTotal.toLocaleString('it'),
+        totalPlusNatural: secondDosePlusNaturalImmunity.toLocaleString('it'),
         percentageOnTotal: ((secondDoseTotal * 100) / totalPopulation).toFixed(
           0
         ),
         percentageOnOver12: ((secondDoseTotal * 100) / over12).toFixed(0),
       },
       /* additionalDose: {
-        total: additionalDoseTotal.toLocaleString('en-US'),
+        total: additionalDoseTotal.toLocaleString('it'),
       }, */
       thirdDose: {
-        total: thirdDoseTotal.toLocaleString("en-US"),
+        total: thirdDoseTotal.toLocaleString('it'),
       },
     },
     isLoading,
@@ -338,8 +338,8 @@ export const useSummaryData = () => {
           ...data.data.map((el) => ({
             id: el.index,
             region: el.nome_area,
-            administered: el.dosi_consegnate.toLocaleString("en-US"),
-            delivered: el.dosi_somministrate.toLocaleString("en-US"),
+            administered: el.dosi_consegnate.toLocaleString('it'),
+            delivered: el.dosi_somministrate.toLocaleString('it'),
             percentage: el.percentuale_somministrazione + "%",
           })),
           {
@@ -347,10 +347,10 @@ export const useSummaryData = () => {
             region: "Total",
             administered: data.data
               .reduce((acc, curr) => acc + curr.dosi_somministrate, 0)
-              .toLocaleString("en-US"),
+              .toLocaleString('it'),
             delivered: data.data
               .reduce((acc, curr) => acc + curr.dosi_consegnate, 0)
-              .toLocaleString("en-US"),
+              .toLocaleString('it'),
             percentage:
               (
                 data.data.reduce(

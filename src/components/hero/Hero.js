@@ -54,7 +54,7 @@ const Hero = () => {
               ? 'Loading...'
               : data?.data
                   .reduce((acc, curr) => acc + curr.dosi_somministrate, 0)
-                  .toLocaleString('en-US')}
+                  .toLocaleString('it')}
           </Typography>
         </Box>{' '}
       </Container>

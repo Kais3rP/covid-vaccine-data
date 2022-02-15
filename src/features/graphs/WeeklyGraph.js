@@ -1,35 +1,35 @@
-import { Box, Container, Grid, Slider, Typography } from "@mui/material";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import debounce from "lodash.debounce";
-import { useAdministeredData } from "./hooks";
-import Zoom from "@mui/material/Zoom";
-import Header from "../../components/reusable/Header";
-import people from "../../img/group_person.svg";
-import { Badge } from "../../components/reusable/Badge";
-import { DateAxis } from "../../components/reusable/Axis";
-import { useWidth } from "../../hooks";
-import { format } from "date-fns";
-import HtmlTooltip from "../../components/reusable/HtmlTooltip";
-import { brands, barColors } from "../../data";
+import { Box, Container, Grid, Slider, Typography } from '@mui/material'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import debounce from 'lodash.debounce'
+import { useAdministeredData } from './hooks'
+import Zoom from '@mui/material/Zoom'
+import Header from '../../components/reusable/Header'
+import people from '../../img/group_person.svg'
+import { Badge } from '../../components/reusable/Badge'
+import { DateAxis } from '../../components/reusable/Axis'
+import { useWidth } from '../../hooks'
+import { format } from 'date-fns'
+import HtmlTooltip from '../../components/reusable/HtmlTooltip'
+import { brands, barColors } from '../../data'
 
 const legendData = brands.reduce((obj, el, i) => {
-  obj[el.label] = barColors[i];
-  return obj;
-}, {});
+  obj[el.label] = barColors[i]
+  return obj
+}, {})
 
 const WeeklyGraph = () => {
   return (
     <Box>
-      <Header title={"Administrations weekly trend"} />
+      <Header title={'Administrations weekly trend'} />
 
       <Grid
         container
         sx={{
-          backgroundColor: "primary.main",
+          backgroundColor: 'primary.main',
           pt: 2,
           pb: 2,
           mt: 2,
-          display: "flex",
+          display: 'flex',
         }}
       >
         <Grid item xs={12} md={3}>
@@ -43,52 +43,72 @@ const WeeklyGraph = () => {
           xs={12}
           md={9}
           sx={{
-            display: "flex",
+            display: 'flex',
           }}
         >
           <Container
             sx={{
               m: 2,
-              display: "flex",
-              justifyContent: "center",
-              flexDirection: "column",
+              display: 'flex',
+              justifyContent: 'center',
+              flexDirection: 'column',
             }}
           >
-            {" "}
-            <Typography variant={"h7"} align={"center"}>
+            {' '}
+            <Typography variant={'h7'} align={'center'}>
               *Pass with mouse on the graph bars to show the weekly data
             </Typography>
             <Box>
               <Graph />
             </Box>
-            <Typography variant={"h7"} align={"center"}>
+            <Typography variant={'h7'} align={'center'}>
               *Move selectors to zoom left and right
             </Typography>
           </Container>
         </Grid>
       </Grid>
     </Box>
-  );
-};
+  )
+}
 
-export default WeeklyGraph;
+export default WeeklyGraph
 
 const Graph = () => {
-  const { width, ref } = useWidth();
-  const [zoom, setZoom] = useState([0, 100]);
-  const [isZoomingLeft, setIsZoomingLeft] = useState(false);
-  const _zoom = 100 - (zoom[1] - zoom[0]);
-  const barWidth = 8;
-  const height = 500;
-  const barMargin = 52;
-  const leftCounterMargin = -_zoom * 45;
-  const { data, isLoading } = useAdministeredData();
-  const margin = 100; /* (width - data?.data?.length * (barWidth + 2)) / 2 - 4 */
+  const { width, ref } = useWidth()
+  const [zoom, setZoom] = useState([0, 100])
+  const [isZoomingLeft, setIsZoomingLeft] = useState(false)
+  const _zoom = 100 - (zoom[1] - zoom[0])
+  const barWidth = 8
+  const height = 500
+  const barMargin = 52
+  const leftCounterMargin = -_zoom * 45
+  const { data, isLoading } = useAdministeredData()
+  const [graphData, setGraphData] = useState(data?.data)
+  const margin = 100 /* (width - data?.data?.length * (barWidth + 2)) / 2 - 4 */
+  const [slide, setSlide] = useState([0, graphData?.length])
 
+  const onSlideChange = (e, val, active) => {
+    const [low, high] = val
+    //console.log(low, high)
+    setSlide(val)
+    setGraphData((arr) => data.data.slice(low, high))
+  }
+
+  useEffect(() => {
+    if (data?.data) {
+      setGraphData(data.data)
+      setSlide([0, data.data?.length])
+    }
+  }, [data?.data])
+
+  const onChange = debounce((e, val, active) => {
+    setIsZoomingLeft(active === 1)
+    setZoom(val)
+  }, 2)
   return isLoading ? (
-    "Loading..."
+    'Loading...'
   ) : (
-    <Box sx={{ position: "relative" }}>
+    <Box sx={{ position: 'relative' }}>
       <svg
         width="100%"
         height={height}
@@ -96,47 +116,44 @@ const Graph = () => {
         id="week-graph"
         data-name="week-graph"
         xmlns="http://www.w3.org/2000/svg"
-        viewBox={"0 140 680 350"}
+        viewBox={'80 90 680 350'}
       >
         <g transform={`translate(${margin} 0)`}>
-          {data?.data.map((el, i) =>
-            data.brands.map((brand, j) => (
-              <HtmlTooltip
-                key={brand.key}
-                TransitionComponent={Zoom}
-                followCursor={true}
-                title={
-                  <BarTooltip
-                    data={{
-                      dateRange: formatRange(el[0]),
-                      data: {
-                        brand: brand.label,
-                        value: el[1][brand.key],
-                      },
-                    }}
+          {graphData &&
+            graphData.map((el, i) =>
+              data.brands.map((brand, j) => (
+                <HtmlTooltip
+                  key={brand.key}
+                  TransitionComponent={Zoom}
+                  followCursor={true}
+                  title={
+                    <BarTooltip
+                      data={{
+                        dateRange: formatRange(el[0]),
+                        data: {
+                          brand: brand.label,
+                          value: el[1][brand.key],
+                        },
+                      }}
+                    />
+                  }
+                >
+                  <rect
+                    className="bar"
+                    width={barWidth - graphData.length/60}
+                    height={formatData(el[1][data.brands[j].key])}
+                    fill={barColors[j]}
+                    x={i * (barWidth + 2)}
+                    y={
+                      height -
+                      barMargin -
+                      formatData(el[1][data.brands[j]?.key]) -
+                      formatData(el[1][data.brands[j + 1]?.key] || 0)
+                    }
                   />
-                }
-              >
-                <rect
-                  className="bar"
-                  width={barWidth + _zoom}
-                  height={formatData(el[1][data.brands[j].key])}
-                  fill={barColors[j]}
-                  x={
-                    isZoomingLeft
-                      ? leftCounterMargin + i * (barWidth + 2 + _zoom)
-                      : i * (barWidth + 2 + _zoom)
-                  }
-                  y={
-                    height -
-                    barMargin -
-                    formatData(el[1][data.brands[j]?.key]) -
-                    formatData(el[1][data.brands[j + 1]?.key] || 0)
-                  }
-                />
-              </HtmlTooltip>
-            ))
-          )}
+                </HtmlTooltip>
+              )),
+            )}
         </g>
 
         <DateAxis
@@ -151,67 +168,64 @@ const Graph = () => {
       </svg>
       <Container>
         <Slider
-          getAriaLabel={() => "Zoom range"}
-          value={zoom}
-          onChange={debounce((e, val, active) => {
-            setIsZoomingLeft(active === 1);
-            setZoom(val);
-          }, 2)}
+          getAriaLabel={() => 'Zoom range'}
+          value={[slide[0], slide[1]]}
+          onChange={onSlideChange}
           valueLabelDisplay="auto"
           getAriaValueText={(val) => val}
           color="secondary"
+          min={0}
+          max={data?.data.length}
         />
       </Container>
     </Box>
-  );
-};
+  )
+}
 
 const BarTooltip = ({ data }) => {
   return (
     <>
-      {" "}
+      {' '}
       <Typography color="inherit">
-        {data.data.brand === "Pfizer Pediatrico"
-          ? "Pediatric Pfizer"
+        {data.data.brand === 'Pfizer Pediatrico'
+          ? 'Pediatric Pfizer'
           : data.data.brand}
       </Typography>
       <Typography color="inherit">
-        {data.data.value.toLocaleString("en-US")}
+        {data.data.value.toLocaleString('it')}
       </Typography>
       <Typography color="inherit">{`from ${format(
         new Date(data?.dateRange[0]),
-        "dd/MM"
-      )} to ${format(new Date(data?.dateRange[1]), "dd/MM")}`}</Typography>
+        'dd/MM',
+      )} to ${format(new Date(data?.dateRange[1]), 'dd/MM')}`}</Typography>
     </>
-  );
-};
+  )
+}
 
 const Legend = ({ data }) => {
   return (
     <Box sx={{ mt: 3 }}>
       {Object.entries(data).map((el) => (
-        <Box key={el[0]} sx={{ display: "flex", mb: 1 }}>
+        <Box key={el[0]} sx={{ display: 'flex', mb: 1 }}>
           <Box
             sx={{
               mr: 2,
-              width: "30px",
-              height: "30px",
-              borderRadius: "50%",
+              width: '30px',
+              height: '30px',
+              borderRadius: '50%',
               backgroundColor: el[1],
             }}
           />
 
-          <Typography variant="h7">
-            {el[0]}
-          </Typography>
+          <Typography variant="h7">{el[0]}</Typography>
         </Box>
       ))}
     </Box>
-  );
-};
+  )
+}
 
-const formatData = (value) => value / 10000;
+const formatData = (value) => value / 10000
 const formatRange = (date) => [
   date,
   new Date(new Date(date).setDate(new Date(date).getDate() + 7)).toISOString(),
-];
+]
