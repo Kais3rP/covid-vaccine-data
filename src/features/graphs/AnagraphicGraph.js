@@ -1,71 +1,71 @@
-import { Box, Container, Grid, Slider, Typography } from "@mui/material";
-import { useSelector } from "react-redux";
-import Header from "../../components/reusable/Header";
-import HtmlTooltip from "../../components/reusable/HtmlTooltip";
-import BadgeTextGraph from "./BadgeTextGraph";
+import { Box, Container, Grid, Slider, Typography } from '@mui/material'
+import { useSelector } from 'react-redux'
+import Header from '../../components/reusable/Header'
+import HtmlTooltip from '../../components/reusable/HtmlTooltip'
+import BadgeTextGraph from './BadgeTextGraph'
 import {
   useAnagraphicData,
   useAnagraphicRegionsData,
   useTotalAdministrations,
-} from "./hooks";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import debounce from "lodash.debounce";
-import { useAdministeredData } from "./hooks";
-import Zoom from "@mui/material/Zoom";
-import { useWidth } from "../../hooks";
-import { format } from "date-fns";
-import { barColors } from "../../data";
-import Map from "../italymap/Map";
+} from './hooks'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import debounce from 'lodash.debounce'
+import { useAdministeredData } from './hooks'
+import Zoom from '@mui/material/Zoom'
+import { useWidth } from '../../hooks'
+import { format } from 'date-fns'
+import { barColors } from '../../data'
+import Map from '../italymap/Map'
 
 const AnagraphicGraph = () => {
-  const [ageRangeSelected, setAgeRangeSelected] = useState(null);
-  const currentRegion = useSelector((state) => state.map.region);
+  const [ageRangeSelected, setAgeRangeSelected] = useState(null)
+  const currentRegion = useSelector((state) => state.map.region)
 
-  const { data, isLoading } = useAnagraphicData();
+  const { data, isLoading } = useAnagraphicData()
 
   const computedData = useMemo(() => {
-    if (!data.data) return;
-    if (currentRegion && currentRegion?.type === "age") {
-      return { ...data, data: data.data[currentRegion.id] };
-    } else return { ...data, data: data.data.Total };
-  }, [data, currentRegion]);
+    if (!data.data) return
+    if (currentRegion && currentRegion?.type === 'age') {
+      return { ...data, data: data.data[currentRegion.id] }
+    } else return { ...data, data: data.data.Total }
+  }, [data, currentRegion])
 
   const totalNumber = useMemo(() => {
-    if (!computedData) return;
+    if (!computedData) return
     if (ageRangeSelected)
       return computedData.data
         .find((el) => el.fascia_anagrafica === ageRangeSelected.range)
-        [ageRangeSelected.type.key].toLocaleString('it');
+        [ageRangeSelected.type.key].toLocaleString('it')
     else
       return computedData.data
         .reduce((sum, curr) => sum + curr.totale, 0)
-        .toLocaleString('it');
-  }, [computedData]);
+        .toLocaleString('it')
+  }, [computedData])
 
   const legendData = computedData?.doseTypes.reduce((obj, el, i) => {
-    obj[el.label] = barColors[i];
-    return obj;
-  }, {});
+    obj[el.label] = barColors[i]
+    return obj
+  }, {})
 
   return isLoading || !data ? (
-    "Loading..."
+    'Loading...'
   ) : (
     <Box>
-      <Header title={"Administrations following age ranges"} />
+      <Header title={'Administrations following age ranges'} />
       <BadgeTextGraph
         title={`Total administrations - ${
-          currentRegion && currentRegion.type === "age"
+          currentRegion && currentRegion.type === 'age'
             ? currentRegion.id
-            : "Italy"
+            : 'Italy'
         } - ${
           ageRangeSelected
-            ? ageRangeSelected.range + " " + ageRangeSelected.type.label
-            : "Total"
+            ? ageRangeSelected.range + ' ' + ageRangeSelected.type.label
+            : 'Total'
         }`}
         data={totalNumber}
-        badgePosition={"left"}
+        badgePosition={'left'}
       />
-      <Grid container sx={{ mt: 3, display: "flex" }}>
+      <Grid container sx={{ mt: 3, display: 'flex' }}>
         <Grid item xs={12} md={6}>
           <Graph
             data={computedData}
@@ -75,36 +75,36 @@ const AnagraphicGraph = () => {
                 ageRangeSelected.type.key === type.key &&
                 ageRangeSelected.range === el.fascia_anagrafica
               )
-                setAgeRangeSelected(null);
+                setAgeRangeSelected(null)
               else
-                setAgeRangeSelected({ range: el.fascia_anagrafica, type, idx });
+                setAgeRangeSelected({ range: el.fascia_anagrafica, type, idx })
             }}
             ageRangeSelected={ageRangeSelected}
-            isRegionSelected={currentRegion && currentRegion.type === "age"}
+            isRegionSelected={currentRegion && currentRegion.type === 'age'}
           />
           <Legend data={legendData} isDark />
-          <Typography color={"primary"}>
+          <Typography color={'primary'}>
             *Pass with mouse over the bars to show tooltip info. Click on bars
             to show all the details.
           </Typography>
         </Grid>
         <Grid item xs={12} md={6}>
-          <Map type={"age"} deselectOnBlur={false} />
+          <Map type={'age'} deselectOnBlur={false} />
         </Grid>
       </Grid>
     </Box>
-  );
-};
+  )
+}
 
 const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
-  const { width, ref } = useWidth();
-  const barWidth = 45;
-  const height = 600;
-  const barMargin = 56;
-  const margin = width / 2;
-  const barMarginX = 10;
+  const { width, ref } = useWidth()
+  const barWidth = 45
+  const height = 600
+  const barMargin = 56
+  const margin = width / 2
+  const barMarginX = 10
   return (
-    <Box sx={{ position: "relative" }}>
+    <Box sx={{ position: 'relative' }}>
       <svg
         width="100%"
         height={height}
@@ -112,7 +112,7 @@ const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
         id="anagraphic-graph"
         data-name="week-graph"
         xmlns="http://www.w3.org/2000/svg"
-        viewBox={"-500 100  680 350"}
+        viewBox={'-500 100  680 350'}
       >
         <g transform={`translate(${margin} 0) rotate(90)`}>
           {data?.data.map((el, i) => (
@@ -135,10 +135,10 @@ const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
                         value: el[type.key]?.toLocaleString('it'),
                         ageRange: el.fascia_anagrafica,
                         percentage: ((el[type.key] * 100) / el.people).toFixed(
-                          1
+                          1,
                         ),
                         total: el.people.toLocaleString('it'),
-                        isTotal: type.key === "people",
+                        isTotal: type.key === 'people',
                       }}
                     />
                   }
@@ -147,18 +147,18 @@ const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
                     onClick={() => onClick(el, type, i)}
                     className="bar"
                     width={barWidth}
-                    height={formatData(el[type.key], isRegionSelected && "big")}
+                    height={formatData(el[type.key], isRegionSelected && 'big')}
                     fill={
                       ageRangeSelected?.range === el.fascia_anagrafica &&
                       ageRangeSelected?.type.key === type.key
-                        ? "#bbbbbb"
+                        ? '#bbbbbb'
                         : barColors[j]
                     }
                     x={i * (barWidth + barMarginX)}
                     y={
                       height -
                       barMargin -
-                      formatData(el[type.key], isRegionSelected && "big")
+                      formatData(el[type.key], isRegionSelected && 'big')
                     }
                   />
                 </HtmlTooltip>
@@ -168,15 +168,15 @@ const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
         </g>
       </svg>
     </Box>
-  );
-};
+  )
+}
 
-export default AnagraphicGraph;
+export default AnagraphicGraph
 
 const BarTooltip = ({ data }) => {
   return (
     <>
-      {" "}
+      {' '}
       <Typography color="inherit">{`Age range: ${data.ageRange}`}</Typography>
       <Typography color="inherit">{data.type}</Typography>
       <Typography color="inherit">{data.value}</Typography>
@@ -189,32 +189,32 @@ const BarTooltip = ({ data }) => {
         </Typography>
       )}
     </>
-  );
-};
+  )
+}
 
 const Legend = ({ data, isDark }) => {
-  return (
-    <Box sx={{ mt: 3, display: "flex", flexWrap: "wrap" }}>
+  return data ? (
+    <Box sx={{ mt: 3, display: 'flex', flexWrap: 'wrap' }}>
       {Object.entries(data).map((el) => (
-        <Box key={el[0]} sx={{ display: "flex", mb: 1, mr: 2 }}>
+        <Box key={el[0]} sx={{ display: 'flex', mb: 1, mr: 2 }}>
           <Box
             sx={{
               mr: 1,
-              width: "30px",
-              height: "30px",
-              borderRadius: "50%",
+              width: '30px',
+              height: '30px',
+              borderRadius: '50%',
               backgroundColor: el[1],
             }}
           />
 
-          <Typography color={isDark ? "primary" : "secondary"} variant="h7">
+          <Typography color={isDark ? 'primary' : 'secondary'} variant="h7">
             {el[0]}
           </Typography>
         </Box>
       ))}
     </Box>
-  );
-};
+  ) : null
+}
 
 const formatData = (value, type) =>
-  value / (type === "big" ? (value > 20000 ? 3000 : 300) : 40000);
+  value / (type === 'big' ? (value > 20000 ? 3000 : 300) : 40000)

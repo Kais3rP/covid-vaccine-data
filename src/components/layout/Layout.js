@@ -62,12 +62,7 @@ const Layout = ({ children, ...props }) => {
       </Container>
       {/* Footer */}
       <Box sx={{ bgcolor: 'background.paper', p: 6 }} component="footer">
-        <Typography
-          variant="subtitle1"
-          align="center"
-          color="text.secondary"
-          component="p"
-        >
+        <Typography variant="subtitle1" align="center" color="text.secondary">
           Built and maintained by
           <Box sx={{ display: 'inline', ml: 1, mr: 1 }}>
             {' '}
@@ -81,7 +76,7 @@ const Layout = ({ children, ...props }) => {
           </Box>
           !
         </Typography>
-        <Copyright name={"Cesare Polonara"}url={URL} />
+        <Copyright name={'Cesare Polonara'} url={URL} />
       </Box>
     </Box>
   )

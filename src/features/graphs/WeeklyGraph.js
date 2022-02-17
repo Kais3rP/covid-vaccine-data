@@ -79,10 +79,10 @@ export default WeeklyGraph
 const Graph = () => {
   const { width, ref } = useWidth()
   const barWidthBase = 8
-  const [barWidth, setBarWidth] = useState(barWidthBase)
   const height = 500
   const barMargin = 52
   const { data, isLoading } = useAdministeredData()
+  const [barWidth, setBarWidth] = useState(0)
   const [graphData, setGraphData] = useState(data?.data)
   const margin = 100
 
@@ -92,10 +92,11 @@ const Graph = () => {
   }, 5)
 
   useEffect(() => {
-    if (data?.data) {
+    if (data?.data && width) {
       setGraphData(data.data)
+      setBarWidth(width / data.data.length)
     }
-  }, [data?.data])
+  }, [data?.data, width])
 
   return isLoading ? (
     'Loading...'
