@@ -47,3 +47,30 @@
 svg {
   color: #000;
 }
+
+.horizontal-slider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.thumb {
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0rem;
+  cursor: pointer;
+}
+
+.thumb:hover {
+  background: #ddd;
+}
+
+.track {
+  background: #fff;
+  height: 2px;
+}

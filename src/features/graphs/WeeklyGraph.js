@@ -11,6 +11,7 @@ import { useWidth } from '../../hooks'
 import { format } from 'date-fns'
 import HtmlTooltip from '../../components/reusable/HtmlTooltip'
 import { brands, barColors } from '../../data'
+import ReactSlider from 'react-slider'
 
 const legendData = brands.reduce((obj, el, i) => {
   obj[el.label] = barColors[i]
@@ -61,9 +62,11 @@ const WeeklyGraph = () => {
             <Box>
               <Graph />
             </Box>
-            <Typography variant={'h7'} align={'center'}>
-              *Move selectors to zoom left and right
-            </Typography>
+            <Box sx={{ mx: "auto", mt: 2 }}>
+              <Typography variant={'h7'} align={'center'}>
+                *Move selectors to zoom left and right
+              </Typography>
+            </Box>
           </Container>
         </Grid>
       </Grid>
@@ -75,36 +78,26 @@ export default WeeklyGraph
 
 const Graph = () => {
   const { width, ref } = useWidth()
-  const [zoom, setZoom] = useState([0, 100])
-  const [isZoomingLeft, setIsZoomingLeft] = useState(false)
-  const _zoom = 100 - (zoom[1] - zoom[0])
-  const barWidth = 8
+  const barWidthBase = 8
+  const [barWidth, setBarWidth] = useState(barWidthBase)
   const height = 500
   const barMargin = 52
-  const leftCounterMargin = -_zoom * 45
   const { data, isLoading } = useAdministeredData()
   const [graphData, setGraphData] = useState(data?.data)
-  const margin = 100 /* (width - data?.data?.length * (barWidth + 2)) / 2 - 4 */
-  const [slide, setSlide] = useState([0, graphData?.length])
+  const margin = 100
 
-  const onSlideChange = (e, val, active) => {
-    const [low, high] = val
-    //console.log(low, high)
-    setSlide(val)
-    setGraphData((arr) => data.data.slice(low, high))
-  }
+  const onRangeChange = debounce((val, selector) => {
+    console.log(val, selector)
+    setGraphData((arr) => data.data.slice(val[0], val[1]))
+    setBarWidth(width / data.data.slice(val[0], val[1]).length)
+  }, 10)
 
   useEffect(() => {
     if (data?.data) {
       setGraphData(data.data)
-      setSlide([0, data.data?.length])
     }
   }, [data?.data])
-
-  const onChange = debounce((e, val, active) => {
-    setIsZoomingLeft(active === 1)
-    setZoom(val)
-  }, 2)
+  console.log('barWidth', barWidth)
   return isLoading ? (
     'Loading...'
   ) : (
@@ -116,7 +109,7 @@ const Graph = () => {
         id="week-graph"
         data-name="week-graph"
         xmlns="http://www.w3.org/2000/svg"
-        viewBox={'80 90 680 350'}
+        viewBox={'50 20 1000 350'}
       >
         <g transform={`translate(${margin} 0)`}>
           {graphData &&
@@ -140,7 +133,7 @@ const Graph = () => {
                 >
                   <rect
                     className="bar"
-                    width={barWidth - graphData.length/60}
+                    width={barWidth}
                     height={formatData(el[1][data.brands[j].key])}
                     fill={barColors[j]}
                     x={i * (barWidth + 2)}
@@ -160,22 +153,23 @@ const Graph = () => {
           data={data?.data}
           containerWidth={width}
           containerHeight={height}
-          zoom={_zoom}
-          isZoomingLeft={isZoomingLeft}
-          leftCounterMargin={leftCounterMargin}
+          zoom={0}
           margin={margin}
         />
       </svg>
       <Container>
-        <Slider
-          getAriaLabel={() => 'Zoom range'}
-          value={[slide[0], slide[1]]}
-          onChange={onSlideChange}
-          valueLabelDisplay="auto"
-          getAriaValueText={(val) => val}
-          color="secondary"
-          min={0}
-          max={data?.data.length}
+        <ReactSlider
+          className="horizontal-slider"
+          thumbClassName="thumb"
+          trackClassName="track"
+          defaultValue={[0, data?.data?.length]}
+          ariaLabel={['Lower thumb', 'Upper thumb']}
+          ariaValuetext={(state) => `Thumb value ${state.valueNow}`}
+          renderThumb={(props, state) => <div {...props}>{state.valueNow}</div>}
+          pearling
+          minDistance={5}
+          onChange={onRangeChange}
+          max={data?.data?.length}
         />
       </Container>
     </Box>
