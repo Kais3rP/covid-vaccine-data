@@ -62,7 +62,7 @@ const WeeklyGraph = () => {
             <Box>
               <Graph />
             </Box>
-            <Box sx={{ mx: "auto", mt: 2 }}>
+            <Box sx={{ mx: 'auto', mt: 2 }}>
               <Typography variant={'h7'} align={'center'}>
                 *Move selectors to zoom left and right
               </Typography>
@@ -87,17 +87,16 @@ const Graph = () => {
   const margin = 100
 
   const onRangeChange = debounce((val, selector) => {
-    console.log(val, selector)
     setGraphData((arr) => data.data.slice(val[0], val[1]))
     setBarWidth(width / data.data.slice(val[0], val[1]).length)
-  }, 10)
+  }, 5)
 
   useEffect(() => {
     if (data?.data) {
       setGraphData(data.data)
     }
   }, [data?.data])
-  console.log('barWidth', barWidth)
+
   return isLoading ? (
     'Loading...'
   ) : (
@@ -150,10 +149,10 @@ const Graph = () => {
         </g>
 
         <DateAxis
-          data={data?.data}
+          data={graphData}
           containerWidth={width}
           containerHeight={height}
-          zoom={0}
+          width={barWidth}
           margin={margin}
         />
       </svg>

@@ -34,27 +34,21 @@ export const ScaleAxis = ({ data }) => {
   )
 }
 
-export const DateAxis = ({
-  data,
-  containerHeight,
-  length,
-  margin,
-}) => {
-  const tickWidth = 10
+export const DateAxis = ({ data, containerHeight, margin, width }) => {
   const ticksNumber = data.length
   const ticks = useMemo(() => {
     return data.map((el, i) => ({
       value: format(new Date(el[0]), 'dd/MM'),
-      xOffset: (i * (10 - length)) / 2,
+      xOffset: i*(width+2) ,
     }))
-  }, [data, length])
-console.log(data, ticks )
+  }, [data])
+  console.log(ticks)
   return (
     <>
       {ticks?.map(({ value, xOffset }) => (
         <g
           key={value}
-          transform={`translate(${margin + 4 + xOffset}, ${
+          transform={`translate(${margin + xOffset + 5}, ${
             containerHeight - 50
           })`}
         >
