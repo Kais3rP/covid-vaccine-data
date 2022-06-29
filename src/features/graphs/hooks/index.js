@@ -19,6 +19,7 @@ import { KeyboardReturnRounded, LegendToggle } from "@mui/icons-material";
 import {
   ageRange,
   ageRangePeople,
+  anagraphicKeys,
   brands,
   regions,
   regions2,
@@ -70,19 +71,10 @@ export const useAnagraphicData = () => {
    *
    */
 
-  const keys = [
-    "prima_dose",
-    "seconda_dose",
-    "dose_addizionale_booster",
-    "fascia_anagrafica",
-    "people",
-    "totale",
-  ];
-
-  const regions = [
-    ...Object.values(regionsData).map((el) => el.label),
-    "Total",
-  ];
+  const regions = useMemo(
+    () => [...Object.values(regionsData).map((el) => el.label), "Total"],
+    []
+  );
 
   /**
    *
@@ -102,7 +94,7 @@ export const useAnagraphicData = () => {
     isSuccess: peopleIsSuccess,
   } = useGetAnagraphicPopulationDataQuery();
   let { data, isLoading, isSuccess } = useGetAdministeredQuery();
-
+  console.log("TEST DATA ANAGRAPHIC", totalData, peopleData, data);
   /**
    *
    *  MANIPULATED DATA
@@ -118,27 +110,32 @@ export const useAnagraphicData = () => {
             ? sumObjectsByKeyInclusive(
                 {
                   ...el,
-                  fascia_anagrafica: "80+",
+                  eta: "80+",
                   people: ageRangePeople["80+"],
                 },
                 totalData.data[i + 1]
               )
             : {
                 ...el,
-                people: ageRangePeople[el.fascia_anagrafica],
+                people: ageRangePeople[el.eta],
               }
         )
         .filter((el, i) => i !== 9);
   }, [totalData]);
 
-  const agesArr = ageRange.map((el) => ({
-    fascia_anagrafica: el,
-    prima_dose: 0,
-    seconda_dose: 0,
-    dose_addizionale_booster: 0,
-    people: 0,
-    totale: 0,
-  }));
+  const agesArr = useMemo(
+    () =>
+      ageRange.map((el) => ({
+        eta: el,
+        d1: 0,
+        d2: 0,
+        db1: 0,
+        db2: 0,
+        people: 0,
+        totale: 0,
+      })),
+    []
+  );
 
   let defaultObj = useMemo(
     () =>
@@ -151,11 +148,10 @@ export const useAnagraphicData = () => {
                 people: peopleData.data.find((el3) => {
                   return (
                     (el === "Provincia Autonoma Trento"
-                      ? el3.nome_area === "P.A. Trento"
+                      ? el3.reg === "P.A. Trento"
                       : el === "Valle d'Aosta / Vallée d'Aoste"
-                      ? el3.nome_area === "Valle d'Aosta"
-                      : el === el3.nome_area) &&
-                    el3.fascia_anagrafica === el2.fascia_anagrafica
+                      ? el3.reg === "Valle d'Aosta"
+                      : el === el3.reg) && el3.eta === el2.eta
                   );
                 })?.totale_popolazione,
               }));
@@ -164,27 +160,27 @@ export const useAnagraphicData = () => {
             return obj;
           }, {})
         : null,
-    [peopleData, totalData]
+    [peopleData, totalData, agesArr, regions]
   );
 
   const computedData = useMemo(() => {
+    console.log("COMPUTING DATA", defaultObj);
     if (!data || !defaultObj) return;
     else {
       return data.data.reduce(
         (obj, el, i) => {
-          if (obj[el.nome_area]) {
-            const idx = obj[el.nome_area].findIndex((el2) => {
-              return el.fascia_anagrafica === "80-89" ||
-                el.fascia_anagrafica === "90+"
-                ? el2.fascia_anagrafica === "80+"
-                : el2.fascia_anagrafica === el.fascia_anagrafica;
+          if (obj[el.reg]) {
+            const idx = obj[el.reg].findIndex((el2) => {
+              return el.eta === "80-89" || el.eta === "90+"
+                ? el2.eta === "80+"
+                : el2.eta === el.eta;
             });
-            if (obj[el.nome_area][idx]) {
-              obj[el.nome_area][idx].totale +=
-                el.prima_dose + el.seconda_dose + el.dose_addizionale_booster;
-              obj[el.nome_area][idx] = sumObjectsByKeySelective(
-                keys,
-                obj[el.nome_area][idx],
+
+            if (obj[el.reg][idx]) {
+              obj[el.reg][idx].totale += el.d1 + el.d2 + el.db1 + el.db2;
+              obj[el.reg][idx] = sumObjectsByKeySelective(
+                anagraphicKeys,
+                obj[el.reg][idx],
                 el
               );
             }
@@ -194,15 +190,17 @@ export const useAnagraphicData = () => {
         { ...defaultObj }
       );
     }
-  }, [data]);
+  }, [data, defaultObj]);
+  console.group("COMPUTED DATA", computedData);
   return {
     data: {
       data: computedData,
       doseTypes: [
         { key: "people", label: "Total" },
-        { key: "prima_dose", label: "First dose" },
-        { key: "seconda_dose", label: "Second dose" },
-        { key: "dose_addizionale_booster", label: "Third dose" },
+        { key: "d1", label: "First dose" },
+        { key: "d2", label: "Second dose" },
+        { key: "db1", label: "Third dose" },
+        { key: "db2", label: "Fourth dose" },
       ],
     },
     isLoading,
@@ -212,39 +210,44 @@ export const useAnagraphicData = () => {
 
 export const useAdministeredSummaryData = () => {
   const { data, isLoading, isSuccess } = useGetAdministeredSummaryQuery();
+
   const firstDoseTotal = useMemo(() => {
-    return data?.data.reduce((acc, curr) => acc + curr.prima_dose, 0);
+    return data?.data.reduce((acc, curr) => acc + curr.d1, 0);
   }, [data]);
-  const firstDosePlusNaturalImmunity = useMemo(() => {
+
+  /* const firstDosePlusNaturalImmunity = useMemo(() => {
     return data?.data.reduce(
-      (acc, curr) => acc + curr.prima_dose + curr.pregressa_infezione,
+      (acc, curr) => acc + curr.dpi,
       0
     );
-  }, [data]);
-  const secondDosePlusNaturalImmunity = useMemo(() => {
-    return data?.data.reduce(
-      (acc, curr) => acc + curr.seconda_dose + curr.pregressa_infezione,
-      0
-    );
-  }, [data]);
+  }, [data]); */
+
   const secondDoseTotal = useMemo(() => {
-    return data?.data.reduce((acc, curr) => acc + curr.seconda_dose, 0);
+    return data?.data.reduce((acc, curr) => acc + curr.d2, 0);
   }, [data]);
+
+  /*  const secondDosePlusNaturalImmunity = useMemo(() => {
+    return data?.data.reduce(
+      (acc, curr) => acc + curr.d2 + curr.pregressa_infezione,
+      0
+    );
+  }, [data]); */
+
   /* const additionalDoseTotal = useMemo(() => {
     return data?.data.reduce((acc, curr) => acc + curr.dose_aggiuntiva, 0)
   }, [data]) */
   const thirdDoseTotal = useMemo(() => {
-    return data?.data.reduce(
-      (acc, curr) => acc + curr.dose_addizionale_booster,
-      0
-    );
+    return data?.data.reduce((acc, curr) => acc + curr.db1, 0);
+  }, [data]);
+
+  const fourthDoseTotal = useMemo(() => {
+    return data?.data.reduce((acc, curr) => acc + curr.db2, 0);
   }, [data]);
 
   return {
     data: data && {
       firstDose: {
         total: firstDoseTotal.toLocaleString("en-US"),
-        totalPlusNatural: firstDosePlusNaturalImmunity.toLocaleString("en-US"),
         percentageOnTotal: ((firstDoseTotal * 100) / totalPopulation).toFixed(
           0
         ),
@@ -252,17 +255,25 @@ export const useAdministeredSummaryData = () => {
       },
       secondDose: {
         total: secondDoseTotal.toLocaleString("en-US"),
-        totalPlusNatural: secondDosePlusNaturalImmunity.toLocaleString("en-US"),
         percentageOnTotal: ((secondDoseTotal * 100) / totalPopulation).toFixed(
           0
         ),
         percentageOnOver12: ((secondDoseTotal * 100) / over12).toFixed(0),
       },
-      /* additionalDose: {
-        total: additionalDoseTotal.toLocaleString('en-US'),
-      }, */
+
       thirdDose: {
         total: thirdDoseTotal.toLocaleString("en-US"),
+        percentageOnTotal: ((thirdDoseTotal * 100) / totalPopulation).toFixed(
+          0
+        ),
+        percentageOnOver12: ((thirdDoseTotal * 100) / over12).toFixed(0),
+      },
+      fourthDose: {
+        total: fourthDoseTotal.toLocaleString("en-US"),
+        percentageOnTotal: ((fourthDoseTotal * 100) / totalPopulation).toFixed(
+          0
+        ),
+        percentageOnOver12: ((fourthDoseTotal * 100) / over12).toFixed(0),
       },
     },
     isLoading,
@@ -289,18 +300,13 @@ export const useAdministeredData = () => {
       Object.entries(
         Object.entries(
           data.data.reduce((obj, el) => {
-            if (obj[el.data_somministrazione])
-              obj[el.data_somministrazione][el.fornitore] +=
-                el.prima_dose +
-                el.seconda_dose +
-                (el.dose_addizionale_booster || 0);
+            if (obj[el.data])
+              obj[el.data][el.forn] += el.d1 + el.d2 + el.db1 + el.db2;
             else {
               const newObj = { ...defaultObj };
-              newObj[el.fornitore] =
-                el.prima_dose +
-                el.seconda_dose +
-                (el.dose_addizionale_booster || 0);
-              obj[el.data_somministrazione] = newObj;
+              newObj[el.forn] = el.d1 + el.d2 + el.db1 + el.db2;
+
+              obj[el.data] = newObj;
             }
             return obj;
           }, {})
@@ -327,7 +333,6 @@ export const useAdministeredData = () => {
 
 export const useSummaryData = () => {
   let { data, isLoading, isSuccess } = useGetSummaryQuery();
-
   // ADD EXTRA PROPS VALUES TO THE REGIONS OBJECT
 
   data = useMemo(() => {
@@ -337,9 +342,9 @@ export const useSummaryData = () => {
         rows: [
           ...data.data.map((el) => ({
             id: el.index,
-            region: el.nome_area,
-            administered: el.dosi_consegnate.toLocaleString("en-US"),
-            delivered: el.dosi_somministrate.toLocaleString("en-US"),
+            region: el.reg,
+            delivered: el.dosi_consegnate.toLocaleString("en-US"),
+            administered: el.dosi_somministrate.toLocaleString("en-US"),
             percentage: el.percentuale_somministrazione + "%",
           })),
           {
@@ -401,7 +406,7 @@ export const useSuppliedData = () => {
     if (!data) return;
     else {
       const temp = data.data.reduce((obj, el) => {
-        obj[el.fornitore] += el.numero_dosi;
+        obj[el.forn] += el.numero_dosi;
         return obj;
       }, defaultObj);
       return Object.entries({
@@ -441,10 +446,10 @@ export const useAdministrationSitesData = () => {
     if (!data) return;
     else
       return data.data.reduce((obj, curr) => {
-        if (obj[curr.nome_area])
-          obj[curr.nome_area] = {
-            ...obj[curr.nome_area],
-            total: obj[curr.nome_area].total + 1,
+        if (obj[curr.reg])
+          obj[curr.reg] = {
+            ...obj[curr.reg],
+            total: obj[curr.reg].total + 1,
           };
         return obj;
       }, defaultObj);
@@ -457,7 +462,7 @@ export const useAdministrationSitesData = () => {
       list: {
         rows: data?.data.map((el) => ({
           id: el.index,
-          region: el.nome_area,
+          region: el.reg,
           site: el.denominazione_struttura,
           type: el.tipologia,
         })),

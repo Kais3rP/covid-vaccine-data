@@ -5,19 +5,24 @@ import {
   Grid,
   Toolbar,
   Typography,
-} from '@mui/material'
-import React from 'react'
-import Copyright from '../copyright/Copyright'
-import CameraIcon from '@mui/icons-material/CameraAlt'
-import badge from '../../img/coccarda.svg'
-import { Badge } from '../reusable/Badge'
+} from "@mui/material";
+import React from "react";
+import Copyright from "../copyright/Copyright";
+import CameraIcon from "@mui/icons-material/CameraAlt";
+import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
+import badge from "../../img/coccarda.svg";
+import { Badge } from "../reusable/Badge";
 
 const Layout = ({ children, ...props }) => {
   return (
     <Box {...props}>
       <AppBar position="relative">
         <Toolbar>
-          <CameraIcon sx={{ mr: 2 }} />
+          <HealthAndSafetyIcon
+            sx={{ mr: 2 }}
+            color={"secondary"}
+            fontSize={"large"}
+          />
           <Typography variant="h6" color="inherit" noWrap>
             Covid Data
           </Typography>
@@ -31,12 +36,12 @@ const Layout = ({ children, ...props }) => {
       >
         <Container
           sx={{
-            backgroundColor: 'primary.main',
+            backgroundColor: "primary.main",
             pb: 2,
             pt: 2,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
           }}
           maxWidth="false"
         >
@@ -49,28 +54,8 @@ const Layout = ({ children, ...props }) => {
             color="text.primary"
             gutterBottom
           >
-            Report Vaccini Anti COVID-19
+            Report Anti COVID-19 vaccines
           </Typography>
-          {/*
-          <Typography
-            variant="h5"
-            align="center"
-            color="text.secondary"
-            paragraph
-          >
-            Something short and leading about the collection below—its contents,
-            the creator, etc. Make it short and sweet, but not too short so
-            folks don&apos;t simply skip over it entirely.
-          </Typography> */}
-          {/*   <Stack
-              sx={{ pt: 4 }}
-              direction="row"
-              spacing={2}
-              justifyContent="center"
-            >
-              <Button variant="contained">Main call to action</Button>
-              <Button variant="outlined">Secondary action</Button>
-            </Stack> */}
         </Container>
       </Box>
 
@@ -79,7 +64,7 @@ const Layout = ({ children, ...props }) => {
         {children}
       </Container>
       {/* Footer */}
-      <Box sx={{ bgcolor: 'background.paper', p: 6 }} component="footer">
+      <Box sx={{ bgcolor: "background.paper", p: 6 }} component="footer">
         <Typography variant="h6" align="center" gutterBottom>
           Footer
         </Typography>
@@ -94,7 +79,7 @@ const Layout = ({ children, ...props }) => {
         <Copyright />
       </Box>
     </Box>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;

@@ -34,7 +34,7 @@ const AnagraphicGraph = () => {
     if (!computedData) return;
     if (ageRangeSelected)
       return computedData.data
-        .find((el) => el.fascia_anagrafica === ageRangeSelected.range)
+        .find((el) => el.eta === ageRangeSelected.range)
         [ageRangeSelected.type.key].toLocaleString("en-US");
     else
       return computedData.data
@@ -47,7 +47,7 @@ const AnagraphicGraph = () => {
     return obj;
   }, {});
 
-  return isLoading || !data ? (
+  return isLoading || !computedData ? (
     "Loading..."
   ) : (
     <Box>
@@ -73,11 +73,11 @@ const AnagraphicGraph = () => {
               if (
                 ageRangeSelected &&
                 ageRangeSelected.type.key === type.key &&
-                ageRangeSelected.range === el.fascia_anagrafica
+                ageRangeSelected.range === el.eta
               )
                 setAgeRangeSelected(null);
               else
-                setAgeRangeSelected({ range: el.fascia_anagrafica, type, idx });
+                setAgeRangeSelected({ range: el.eta, type, idx });
             }}
             ageRangeSelected={ageRangeSelected}
             isRegionSelected={currentRegion && currentRegion.type === "age"}
@@ -103,6 +103,18 @@ const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
   const barMargin = 56;
   const margin = width / 2;
   const barMarginX = 10;
+
+  const [doseTypes, setDoseTypes] = useState(data?.doseTypes);
+
+  const onMouseEnter = (type) => {
+    console.log("ENTERED", type);
+    setDoseTypes((types) => {
+      const orderedTypes = [...types];
+      types[types.length - 1] = type;
+      return orderedTypes;
+    });
+  };
+  console.log("DOSE TYPES", doseTypes);
   return (
     <Box sx={{ position: "relative" }}>
       <svg
@@ -116,14 +128,14 @@ const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
       >
         <g transform={`translate(${margin} 0) rotate(90)`}>
           {data?.data.map((el, i) => (
-            <g key={el.fascia_anagrafica}>
+            <g key={el.eta}>
               <text
                 className="bar_text"
                 transform={`rotate(-90)`}
                 x={-(height + 40)}
                 y={barWidth / 2 + i * (barWidth + barMarginX)}
-              >{`Range ${el.fascia_anagrafica}`}</text>
-              {data?.doseTypes.map((type, j) => (
+              >{`Range ${el.eta}`}</text>
+              {doseTypes.map((type, j) => (
                 <HtmlTooltip
                   key={type.key}
                   TransitionComponent={Zoom}
@@ -133,7 +145,7 @@ const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
                       data={{
                         type: type.label,
                         value: el[type.key]?.toLocaleString("en-US"),
-                        ageRange: el.fascia_anagrafica,
+                        ageRange: el.eta,
                         percentage: ((el[type.key] * 100) / el.people).toFixed(
                           1
                         ),
@@ -144,12 +156,13 @@ const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
                   }
                 >
                   <rect
+                    onMouseEnter={(e) => onMouseEnter(type)}
                     onClick={() => onClick(el, type, i)}
                     className="bar"
                     width={barWidth}
                     height={formatData(el[type.key], isRegionSelected && "big")}
                     fill={
-                      ageRangeSelected?.range === el.fascia_anagrafica &&
+                      ageRangeSelected?.range === el.eta &&
                       ageRangeSelected?.type.key === type.key
                         ? "#bbbbbb"
                         : barColors[j]
@@ -160,6 +173,8 @@ const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
                       barMargin -
                       formatData(el[type.key], isRegionSelected && "big")
                     }
+                    rx={3}
+                    ry={5}
                   />
                 </HtmlTooltip>
               ))}

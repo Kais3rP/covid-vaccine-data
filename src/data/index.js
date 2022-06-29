@@ -162,3 +162,13 @@ export const ageRangePeople = {
   "70-79": 6019293,
   "80+": 4563500,
 };
+
+export const anagraphicKeys = [
+  "d1",
+  "d2",
+  "db1",
+  "db2",
+  "eta",
+  "people",
+  "totale",
+];

@@ -16,28 +16,43 @@ const Graphs = () => {
   return (
     <Box>
       <TextGraph
-        title="First and second doises"
-        Comp1={TotalOneDose}
-        Comp2={TotalTwoDoses}
+        title="First and second doses"
+        Comp1={() => <TotalDosesAdministered type="firstDose" />}
+        Comp2={() => <TotalDosesAdministered type="secondDose" />}
       />
       <TextGraph
         title="Third and fourth doses"
-        Comp1={TotalThreeDoses}
-        Comp2={TotalFourDoses}
+        Comp1={() => <TotalDosesAdministered type="thirdDose" />}
+        Comp2={() => <TotalDosesAdministered type="fourthDose" />}
       />
       <SummaryGraph />
       <WeeklyGraph />
       <AnagraphicGraph />
-      <DeliveredGraph />
-      <AdministrationSites />
+      {/*  <DeliveredGraph />
+      <AdministrationSites /> */}
     </Box>
   );
 };
 
 export default Graphs;
 
-const TotalOneDose = () => {
+const TotalDosesAdministered = ({ type }) => {
   const { data, isLoading } = useAdministeredSummaryData();
+
+  const title = useMemo(() => {
+    switch (type) {
+      case "firstDose":
+        return "1 dose";
+      case "secondDose":
+        return "2 doses";
+      case "thirdDose":
+        return "3 doses";
+      case "fourthDose":
+        return "4 doses";
+      default:
+        return "1 dose";
+    }
+  }, [type]);
 
   return isLoading ? (
     "Loading..."
@@ -45,73 +60,16 @@ const TotalOneDose = () => {
     <>
       {" "}
       <Typography variant="h5" sx={{ mt: "3rem" }}>
-        {" "}
-        1 dose
+        {title}
       </Typography>
-      <Typography variant="h4"> {data.firstDose.total}</Typography>
+      <Typography variant="h4"> {data[type].total}</Typography>
+      {/* <Typography>
+        Total plus natural immunity: {data[type].totalPlusNatural}
+      </Typography> */}
+      <Typography>{data[type].percentageOnTotal}% of people</Typography>
       <Typography>
-        Total plus natural immunity: {data.firstDose.totalPlusNatural}
+        {data[type].percentageOnOver12}% of people over 12
       </Typography>
-      <Typography>{data.firstDose.percentageOnTotal}% of people</Typography>
-      <Typography>
-        {data.firstDose.percentageOnOver12}% of people over 12
-      </Typography>
-    </>
-  );
-};
-
-const TotalTwoDoses = () => {
-  const { data, isLoading } = useAdministeredSummaryData();
-  return isLoading ? (
-    "Loading..."
-  ) : (
-    <>
-      <Typography variant="h5" sx={{ mt: "3rem" }}>
-        {" "}
-        2 doses
-      </Typography>
-      <Typography variant="h4"> {data.secondDose.total}</Typography>
-      <Typography>
-        Total plus natural immunity: {data.secondDose.totalPlusNatural}
-      </Typography>
-
-      <Typography>{data.secondDose.percentageOnTotal}% of people</Typography>
-      <Typography>
-        {data.secondDose.percentageOnOver12}% of people over 12
-      </Typography>
-    </>
-  );
-};
-
-const TotalFourDoses = () => {
-  const { data, isLoading } = useAdministeredSummaryData();
-  return isLoading ? (
-    "Loading..."
-  ) : (
-    <>
-      <Typography variant="h5" sx={{ mt: "3rem" }}>
-        {" "}
-        4 doses
-      </Typography>
-      <Typography variant="h4">
-        {" "}
-        {data.fourthDose?.total || "Campaign is not started"}
-      </Typography>
-    </>
-  );
-};
-
-const TotalThreeDoses = () => {
-  const { data, isLoading } = useAdministeredSummaryData();
-  return isLoading ? (
-    "Loading..."
-  ) : (
-    <>
-      <Typography variant="h5" sx={{ mt: "3rem" }}>
-        {" "}
-        3 doses
-      </Typography>
-      <Typography variant="h4"> {data.thirdDose.total}</Typography>
     </>
   );
 };

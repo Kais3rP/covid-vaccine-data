@@ -36,12 +36,11 @@
 }
 
 .bar:hover {
-  fill: red;
   cursor: pointer;
 }
 
 .bar_text {
-  font: italic 14px 'Arial';
+  font: italic 14px "Arial";
 }
 
 svg {

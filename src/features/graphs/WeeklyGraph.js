@@ -1,5 +1,11 @@
 import { Box, Container, Grid, Slider, Typography } from "@mui/material";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import debounce from "lodash.debounce";
 import { useAdministeredData } from "./hooks";
 import Zoom from "@mui/material/Zoom";
@@ -18,6 +24,8 @@ const legendData = brands.reduce((obj, el, i) => {
 }, {});
 
 const WeeklyGraph = () => {
+  const { data, isLoading } = useAdministeredData();
+
   return (
     <Box>
       <Header title={"Administrations weekly trend"} />
@@ -59,7 +67,7 @@ const WeeklyGraph = () => {
               *Pass with mouse on the graph bars to show the weekly data
             </Typography>
             <Box>
-              <Graph />
+              <Graph data={data} isLoading={isLoading} />
             </Box>
             <Typography variant={"h7"} align={"center"}>
               *Move selectors to zoom left and right
@@ -73,7 +81,7 @@ const WeeklyGraph = () => {
 
 export default WeeklyGraph;
 
-const Graph = () => {
+const Graph = React.memo(({ data, isLoading }) => {
   const { width, ref } = useWidth();
   const [zoom, setZoom] = useState([0, 100]);
   const [isZoomingLeft, setIsZoomingLeft] = useState(false);
@@ -82,7 +90,6 @@ const Graph = () => {
   const height = 500;
   const barMargin = 52;
   const leftCounterMargin = -_zoom * 45;
-  const { data, isLoading } = useAdministeredData();
   const margin = 100; /* (width - data?.data?.length * (barWidth + 2)) / 2 - 4 */
 
   return isLoading ? (
@@ -96,49 +103,16 @@ const Graph = () => {
         id="week-graph"
         data-name="week-graph"
         xmlns="http://www.w3.org/2000/svg"
-        viewBox={"0 140 680 350"}
+        viewBox={`${
+          isZoomingLeft ? zoom[1] - zoom[0] : zoom[0] - zoom[1]
+        } 0 300 600`}
       >
-        <g transform={`translate(${margin} 0)`}>
-          {data?.data.map((el, i) =>
-            data.brands.map((brand, j) => (
-              <HtmlTooltip
-                key={brand.key}
-                TransitionComponent={Zoom}
-                followCursor={true}
-                title={
-                  <BarTooltip
-                    data={{
-                      dateRange: formatRange(el[0]),
-                      data: {
-                        brand: brand.label,
-                        value: el[1][brand.key],
-                      },
-                    }}
-                  />
-                }
-              >
-                <rect
-                  className="bar"
-                  width={barWidth + _zoom}
-                  height={formatData(el[1][data.brands[j].key])}
-                  fill={barColors[j]}
-                  x={
-                    isZoomingLeft
-                      ? leftCounterMargin + i * (barWidth + 2 + _zoom)
-                      : i * (barWidth + 2 + _zoom)
-                  }
-                  y={
-                    height -
-                    barMargin -
-                    formatData(el[1][data.brands[j]?.key]) -
-                    formatData(el[1][data.brands[j + 1]?.key] || 0)
-                  }
-                />
-              </HtmlTooltip>
-            ))
-          )}
-        </g>
-
+        <Bars
+          data={data}
+          height={height}
+          barMargin={barMargin}
+          margin={margin}
+        />
         <DateAxis
           data={data?.data}
           containerWidth={width}
@@ -146,7 +120,6 @@ const Graph = () => {
           zoom={_zoom}
           isZoomingLeft={isZoomingLeft}
           leftCounterMargin={leftCounterMargin}
-          margin={margin}
         />
       </svg>
       <Container>
@@ -164,9 +137,52 @@ const Graph = () => {
       </Container>
     </Box>
   );
-};
+});
 
-const BarTooltip = ({ data }) => {
+const Bars = React.memo(({ data, height, margin }) => {
+  const barWidth = 8;
+  const barMargin = 52;
+  return (
+    <g transform={`translate(${margin} 0)`}>
+      {data?.data.map((el, i) =>
+        data.brands.map((brand, j) => (
+          <HtmlTooltip
+            key={brand.key}
+            TransitionComponent={Zoom}
+            followCursor={true}
+            title={
+              <BarTooltip
+                data={{
+                  dateRange: formatRange(el[0]),
+                  data: {
+                    brand: brand.label,
+                    value: el[1][brand.key],
+                  },
+                }}
+              />
+            }
+          >
+            <rect
+              className="bar"
+              width={barWidth}
+              height={formatData(el[1][data.brands[j].key])}
+              fill={barColors[j]}
+              x={i * (barWidth + 2)}
+              y={
+                height -
+                barMargin -
+                formatData(el[1][data.brands[j]?.key]) -
+                formatData(el[1][data.brands[j + 1]?.key] || 0)
+              }
+            />
+          </HtmlTooltip>
+        ))
+      )}
+    </g>
+  );
+});
+
+const BarTooltip = React.memo(({ data }) => {
   return (
     <>
       {" "}
@@ -184,9 +200,9 @@ const BarTooltip = ({ data }) => {
       )} to ${format(new Date(data?.dateRange[1]), "dd/MM")}`}</Typography>
     </>
   );
-};
+});
 
-const Legend = ({ data }) => {
+const Legend = React.memo(({ data }) => {
   return (
     <Box sx={{ mt: 3 }}>
       {Object.entries(data).map((el) => (
@@ -201,14 +217,12 @@ const Legend = ({ data }) => {
             }}
           />
 
-          <Typography variant="h7">
-            {el[0]}
-          </Typography>
+          <Typography variant="h7">{el[0]}</Typography>
         </Box>
       ))}
     </Box>
   );
-};
+});
 
 const formatData = (value) => value / 10000;
 const formatRange = (date) => [
