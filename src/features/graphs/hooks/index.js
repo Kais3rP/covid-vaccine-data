@@ -137,7 +137,7 @@ export const useAnagraphicData = () => {
     []
   );
 
-  let defaultObj = useMemo(
+  /*   let defaultObj = useMemo(
     () =>
       peopleData && totalData
         ? regions.reduce((obj, el) => {
@@ -161,9 +161,31 @@ export const useAnagraphicData = () => {
           }, {})
         : null,
     [peopleData, totalData, agesArr, regions]
-  );
+  ); */
 
   const computedData = useMemo(() => {
+    let defaultObj =
+      peopleData && totalData
+        ? regions.reduce((obj, el) => {
+            if (el === "Total") obj[el] = totalData;
+            else {
+              const _agesArr = agesArr.map((el2) => ({
+                ...el2,
+                people: peopleData.data.find((el3) => {
+                  return (
+                    (el === "Provincia Autonoma Trento"
+                      ? el3.reg === "P.A. Trento"
+                      : el === "Valle d'Aosta / Vallée d'Aoste"
+                      ? el3.reg === "Valle d'Aosta"
+                      : el === el3.reg) && el3.eta === el2.eta
+                  );
+                })?.totale_popolazione,
+              }));
+              obj[el] = _agesArr;
+            }
+            return obj;
+          }, {})
+        : null;
     console.log("COMPUTING DATA", defaultObj);
     if (!data || !defaultObj) return;
     else {
@@ -190,7 +212,7 @@ export const useAnagraphicData = () => {
         { ...defaultObj }
       );
     }
-  }, [data, defaultObj]);
+  }, [data, peopleData, totalData, agesArr, regions]);
   console.group("COMPUTED DATA", computedData);
   return {
     data: {

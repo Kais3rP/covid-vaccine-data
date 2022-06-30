@@ -103,9 +103,7 @@ const Graph = React.memo(({ data, isLoading }) => {
         id="week-graph"
         data-name="week-graph"
         xmlns="http://www.w3.org/2000/svg"
-        viewBox={`${
-          isZoomingLeft ? zoom[1] - zoom[0] : zoom[0] - zoom[1]
-        } 0 300 600`}
+        viewBox={`${zoom[1] - zoom[0]} ${4 * zoom[1] - zoom[0]} 600`}
       >
         <Bars
           data={data}

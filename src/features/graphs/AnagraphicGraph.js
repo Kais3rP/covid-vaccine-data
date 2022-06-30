@@ -40,7 +40,7 @@ const AnagraphicGraph = () => {
       return computedData.data
         .reduce((sum, curr) => sum + curr.totale, 0)
         .toLocaleString("en-US");
-  }, [computedData]);
+  }, [computedData, ageRangeSelected]);
 
   const legendData = computedData?.doseTypes.reduce((obj, el, i) => {
     obj[el.label] = barColors[i];
@@ -76,8 +76,7 @@ const AnagraphicGraph = () => {
                 ageRangeSelected.range === el.eta
               )
                 setAgeRangeSelected(null);
-              else
-                setAgeRangeSelected({ range: el.eta, type, idx });
+              else setAgeRangeSelected({ range: el.eta, type, idx });
             }}
             ageRangeSelected={ageRangeSelected}
             isRegionSelected={currentRegion && currentRegion.type === "age"}
@@ -99,8 +98,8 @@ const AnagraphicGraph = () => {
 const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
   const { width, ref } = useWidth();
   const barWidth = 45;
-  const height = 600;
-  const barMargin = 56;
+  const height = 1800;
+  const barMargin = 1500;
   const margin = width / 2;
   const barMarginX = 10;
 
@@ -124,7 +123,7 @@ const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
         id="anagraphic-graph"
         data-name="week-graph"
         xmlns="http://www.w3.org/2000/svg"
-        viewBox={"-500 100  680 350"}
+        viewBox={"0 0  680 350"}
       >
         <g transform={`translate(${margin} 0) rotate(90)`}>
           {data?.data.map((el, i) => (
