@@ -84,13 +84,19 @@ export default WeeklyGraph;
 const Graph = React.memo(({ data, isLoading }) => {
   const { width, ref } = useWidth();
   const [zoom, setZoom] = useState([0, 100]);
-  const [isZoomingLeft, setIsZoomingLeft] = useState(false);
-  const _zoom = 100 - (zoom[1] - zoom[0]);
-  const barWidth = 8;
-  const height = 500;
-  const barMargin = 52;
-  const leftCounterMargin = -_zoom * 45;
-  const margin = 100; /* (width - data?.data?.length * (barWidth + 2)) / 2 - 4 */
+  const height = 800;
+
+  const barsData = useMemo(() => {
+    if (!data?.data) return [];
+    const ratio = data.data.length / 100;
+    const startN = zoom[0] * ratio;
+    const endN = (100 - zoom[1]) * ratio;
+    return [...data.data.slice(startN, data.data.length - endN)];
+  }, [data, zoom]);
+
+  const barWidth = useMemo(() => {
+    return width / barsData.length - 2;
+  }, [width, barsData]);
 
   return isLoading ? (
     "Loading..."
@@ -103,31 +109,29 @@ const Graph = React.memo(({ data, isLoading }) => {
         id="week-graph"
         data-name="week-graph"
         xmlns="http://www.w3.org/2000/svg"
-        viewBox={`${zoom[1] - zoom[0]} ${4 * zoom[1] - zoom[0]} 600`}
       >
         <Bars
-          data={data}
+          brandsData={data?.brands}
+          barsData={barsData}
           height={height}
-          barMargin={barMargin}
-          margin={margin}
+          barWidth={barWidth}
         />
-        <DateAxis
+        {/*   <DateAxis
           data={data?.data}
           containerWidth={width}
           containerHeight={height}
           zoom={_zoom}
           isZoomingLeft={isZoomingLeft}
           leftCounterMargin={leftCounterMargin}
-        />
+        /> */}
       </svg>
       <Container>
         <Slider
           getAriaLabel={() => "Zoom range"}
           value={zoom}
           onChange={debounce((e, val, active) => {
-            setIsZoomingLeft(active === 1);
             setZoom(val);
-          }, 2)}
+          }, 5)}
           valueLabelDisplay="auto"
           getAriaValueText={(val) => val}
           color="secondary"
@@ -137,48 +141,63 @@ const Graph = React.memo(({ data, isLoading }) => {
   );
 });
 
-const Bars = React.memo(({ data, height, margin }) => {
-  const barWidth = 8;
-  const barMargin = 52;
-  return (
-    <g transform={`translate(${margin} 0)`}>
-      {data?.data.map((el, i) =>
-        data.brands.map((brand, j) => (
-          <HtmlTooltip
-            key={brand.key}
-            TransitionComponent={Zoom}
-            followCursor={true}
-            title={
-              <BarTooltip
-                data={{
-                  dateRange: formatRange(el[0]),
-                  data: {
-                    brand: brand.label,
-                    value: el[1][brand.key],
-                  },
-                }}
-              />
-            }
-          >
-            <rect
-              className="bar"
-              width={barWidth}
-              height={formatData(el[1][data.brands[j].key])}
-              fill={barColors[j]}
-              x={i * (barWidth + 2)}
-              y={
-                height -
-                barMargin -
-                formatData(el[1][data.brands[j]?.key]) -
-                formatData(el[1][data.brands[j + 1]?.key] || 0)
-              }
-            />
-          </HtmlTooltip>
-        ))
-      )}
-    </g>
-  );
-});
+const Bars = React.memo(
+  ({ barsData, brandsData, height, margin, barWidth }) => {
+    console.log("BARS DATA", barsData);
+    const barMargin = 1;
+    return (
+      <g>
+        {barsData.map((el, i) => (
+          <g>
+            {brandsData.map((brand, j) => (
+              <HtmlTooltip
+                key={brand.key}
+                TransitionComponent={Zoom}
+                followCursor={true}
+                title={
+                  <BarTooltip
+                    data={{
+                      dateRange: formatRange(el[0]),
+                      data: {
+                        brand: brand.label,
+                        value: el[1][brand.key],
+                      },
+                    }}
+                  />
+                }
+              >
+                <rect
+                  className="bar"
+                  width={barWidth}
+                  height={formatData(el[1][brandsData[j].key])}
+                  fill={barColors[j]}
+                  x={i * (barWidth + 2)}
+                  y={
+                    height -
+                    barMargin -
+                    formatData(el[1][brandsData[j]?.key]) -
+                    formatData(el[1][brandsData[j + 1]?.key] || 0) -
+                    30 // space for date
+                  }
+                />
+              </HtmlTooltip>
+            ))}
+            <text
+              style={{
+                font: `lighter ${barWidth * 0.06}rem sans-serif`,
+              }}
+              x={i * (barWidth + 2) - 25} //25 is the offset on the y axis since it's rotated x is y and y is x axis
+              y={height}
+              transform={`rotate(90,${i * (barWidth + 2)},${height})`}
+            >
+              {format(new Date(el[0]), "dd/MM")}
+            </text>
+          </g>
+        ))}
+      </g>
+    );
+  }
+);
 
 const BarTooltip = React.memo(({ data }) => {
   return (
@@ -222,7 +241,7 @@ const Legend = React.memo(({ data }) => {
   );
 });
 
-const formatData = (value) => value / 10000;
+const formatData = (value) => value / 5000;
 const formatRange = (date) => [
   date,
   new Date(new Date(date).setDate(new Date(date).getDate() + 7)).toISOString(),
