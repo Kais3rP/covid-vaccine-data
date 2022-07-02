@@ -98,10 +98,7 @@ const AnagraphicGraph = () => {
 const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
   const { width, ref } = useWidth();
   const barWidth = 45;
-  const height = 1800;
-  const barMargin = 1500;
-  const margin = width / 2;
-  const barMarginX = 10;
+  const height = 500;
 
   const [doseTypes, setDoseTypes] = useState(data?.doseTypes);
 
@@ -123,17 +120,21 @@ const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
         id="anagraphic-graph"
         data-name="week-graph"
         xmlns="http://www.w3.org/2000/svg"
-        viewBox={"0 0  680 350"}
+        //transform={`rotate(90)`}
       >
-        <g transform={`translate(${margin} 0) rotate(90)`}>
+        <g>
           {data?.data.map((el, i) => (
             <g key={el.eta}>
-              <text
+              {/*  <text
                 className="bar_text"
-                transform={`rotate(-90)`}
-                x={-(height + 40)}
+                // transform={`rotate(-90)`}
+                 x={-(height + 40)}
                 y={barWidth / 2 + i * (barWidth + barMarginX)}
-              >{`Range ${el.eta}`}</text>
+                x={i * barWidth} // SVG is rotated so x is y and viceversa
+                y={
+                  height // offset for label
+                }
+              >{`Range ${el.eta}`}</text> */}
               {doseTypes.map((type, j) => (
                 <HtmlTooltip
                   key={type.key}
@@ -158,22 +159,25 @@ const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
                     onMouseEnter={(e) => onMouseEnter(type)}
                     onClick={() => onClick(el, type, i)}
                     className="bar"
-                    width={barWidth}
-                    height={formatData(el[type.key], isRegionSelected && "big")}
+                    height={barWidth}
+                    width={formatData(
+                      el[type.key],
+                      width,
+                      data?.data.reduce(
+                        (acc, curr) => (curr.people > acc ? curr.people : acc),
+                        0
+                      )
+                    )} // pick the higher total people number as reference for max width
                     fill={
                       ageRangeSelected?.range === el.eta &&
                       ageRangeSelected?.type.key === type.key
                         ? "#bbbbbb"
                         : barColors[j]
                     }
-                    x={i * (barWidth + barMarginX)}
-                    y={
-                      height -
-                      barMargin -
-                      formatData(el[type.key], isRegionSelected && "big")
+                    x={
+                      0 // 100 is the label offset
                     }
-                    rx={3}
-                    ry={5}
+                    y={i * (barWidth + 2)}
                   />
                 </HtmlTooltip>
               ))}
@@ -230,5 +234,7 @@ const Legend = ({ data, isDark }) => {
   ) : null;
 };
 
-const formatData = (value, type) =>
-  value / (type === "big" ? (value > 20000 ? 3000 : 300) : 40000);
+const formatData = (value, width, total) => {
+  console.log(total);
+  return (width * value) / total;
+};
