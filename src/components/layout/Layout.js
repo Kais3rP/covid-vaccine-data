@@ -13,6 +13,8 @@ import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
 import badge from "../../img/coccarda.svg";
 import { Badge } from "../reusable/Badge";
 
+const URL = 'http://mc-polonara.vercel.app/'
+
 const Layout = ({ children, ...props }) => {
   return (
     <Box {...props}>
@@ -24,7 +26,7 @@ const Layout = ({ children, ...props }) => {
             fontSize={"large"}
           />
           <Typography variant="h6" color="inherit" noWrap>
-            Covid Data
+            SARS-CoV2 Vaccine Italian Data
           </Typography>
         </Toolbar>
       </AppBar>
@@ -45,7 +47,7 @@ const Layout = ({ children, ...props }) => {
           }}
           maxWidth="false"
         >
-          <Badge src={badge} alt="coccarda" width={6} />
+          <Badge src={coccarda} alt="coccarda" width={6} />
 
           <Typography
             component="h1"
@@ -76,7 +78,7 @@ const Layout = ({ children, ...props }) => {
         >
           Something here to give the footer a purpose!
         </Typography>
-        <Copyright />
+        <Copyright name={'Cesare Polonara'} url={URL} />
       </Box>
     </Box>
   );

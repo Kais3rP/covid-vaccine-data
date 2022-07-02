@@ -5,15 +5,19 @@ import '../../App.css'
 import { useSelector } from 'react-redux'
 
 const List = ({ data }) => {
+  console.log('LIST DATA', data)
   return (
     data && (
-      <Box>
+      <Box sx={{ height: 400 }}>
         {' '}
         <DataGrid
           {...data}
           getRowClassName={(params) => 'grid-cell'}
-          hideFooterPagination={true}
-          disableExtendRowFullWidth={true}
+          hideFooterPagination={false}
+          disableExtendRowFullWidth
+          pageSize={5}
+          rowsPerPageOptions={[5]}
+          disableSelectionOnClick
         />
       </Box>
     )

@@ -43,12 +43,10 @@ const AdministrationSites = () => {
         badgePosition={'left'}
       />
       <Grid container sx={{ mt: 3, display: 'flex' }}>
-        <Grid item md={12} lg={6}>
-          {' '}
+        <Grid item xs={12} md={6}>
           <List data={data?.list} />
         </Grid>
         <Grid item md={12} lg={6}>
-          {' '}
           <Map type={'site'} deselectOnBlur={true} />
         </Grid>
       </Grid>

@@ -148,7 +148,7 @@ const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
                         percentage: ((el[type.key] * 100) / el.people).toFixed(
                           1
                         ),
-                        total: el.people.toLocaleString("en-US"),
+                        total: el.people.toLocaleString("it"),
                         isTotal: type.key === "people",
                       }}
                     />
@@ -207,7 +207,7 @@ const BarTooltip = ({ data }) => {
 };
 
 const Legend = ({ data, isDark }) => {
-  return (
+  return data ? (
     <Box sx={{ mt: 3, display: "flex", flexWrap: "wrap" }}>
       {Object.entries(data).map((el) => (
         <Box key={el[0]} sx={{ display: "flex", mb: 1, mr: 2 }}>
@@ -227,7 +227,7 @@ const Legend = ({ data, isDark }) => {
         </Box>
       ))}
     </Box>
-  );
+  ) : null;
 };
 
 const formatData = (value, type) =>

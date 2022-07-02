@@ -5,7 +5,9 @@ import App from './App'
 import { store } from './app/store'
 import { Provider } from 'react-redux'
 import * as serviceWorker from './serviceWorker'
+/* SUPPRESS console.log */
 
+if (process.env.NODE_ENV === 'production') window.console.log = () => {}
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>

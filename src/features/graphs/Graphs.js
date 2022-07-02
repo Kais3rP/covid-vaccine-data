@@ -1,16 +1,16 @@
-import { Box, Container, Grid, Typography } from "@mui/material";
-import { useMemo } from "react";
-import { useSelector } from "react-redux";
-import Header from "../../components/reusable/Header";
-import Map from "../italymap/Map";
-import AdministrationSites from "./AdministrationSites";
-import AnagraphicGraph from "./AnagraphicGraph";
-import BadgeTextGraph from "./BadgeTextGraph";
-import DeliveredGraph from "./DeliveredGraph";
-import { useAdministeredSummaryData } from "./hooks";
-import SummaryGraph from "./SummaryGraph";
-import TextGraph from "./TextGraph";
-import WeeklyGraph from "./WeeklyGraph";
+import { Box, Container, Grid, Typography } from '@mui/material'
+import { useMemo } from 'react'
+import { useSelector } from 'react-redux'
+import Header from '../../components/reusable/Header'
+import Map from '../italymap/Map'
+import AdministrationSites from './AdministrationSites'
+import AnagraphicGraph from './AnagraphicGraph'
+import BadgeTextGraph from './BadgeTextGraph'
+import DeliveredGraph from './DeliveredGraph'
+import { useAdministeredSummaryData } from './hooks'
+import SummaryGraph from './SummaryGraph'
+import TextGraph from './TextGraph'
+import WeeklyGraph from './WeeklyGraph'
 
 const Graphs = () => {
   return (
@@ -31,10 +31,10 @@ const Graphs = () => {
       {/*  <DeliveredGraph />
       <AdministrationSites /> */}
     </Box>
-  );
-};
+  )
+}
 
-export default Graphs;
+export default Graphs
 
 const TotalDosesAdministered = ({ type }) => {
   const { data, isLoading } = useAdministeredSummaryData();
@@ -55,7 +55,7 @@ const TotalDosesAdministered = ({ type }) => {
   }, [type]);
 
   return isLoading ? (
-    "Loading..."
+    'Loading...'
   ) : (
     <>
       {" "}
@@ -71,5 +71,5 @@ const TotalDosesAdministered = ({ type }) => {
         {data[type].percentageOnOver12}% of people over 12
       </Typography>
     </>
-  );
-};
+  )
+}
