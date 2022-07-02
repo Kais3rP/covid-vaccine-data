@@ -13,7 +13,7 @@ import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
 import badge from "../../img/coccarda.svg";
 import { Badge } from "../reusable/Badge";
 
-const URL = 'http://mc-polonara.vercel.app/'
+const URL = "http://cesarepolonara.com/";
 
 const Layout = ({ children, ...props }) => {
   return (
@@ -47,7 +47,7 @@ const Layout = ({ children, ...props }) => {
           }}
           maxWidth="false"
         >
-          <Badge src={coccarda} alt="coccarda" width={6} />
+          <Badge src={badge} alt="badge" width={6} />
 
           <Typography
             component="h1"
@@ -78,7 +78,7 @@ const Layout = ({ children, ...props }) => {
         >
           Something here to give the footer a purpose!
         </Typography>
-        <Copyright name={'Cesare Polonara'} url={URL} />
+        <Copyright name={"Cesare Polonara"} url={URL} />
       </Box>
     </Box>
   );

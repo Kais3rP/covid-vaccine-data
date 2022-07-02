@@ -179,7 +179,7 @@ const Bars = React.memo(
                     barMargin -
                     formatData(el[1][brandsData[j]?.key]) -
                     formatData(el[1][brandsData[j + 1]?.key] || 0) -
-                    30 // space for date
+                    40 // space for date
                   }
                 />
               </HtmlTooltip>
@@ -188,7 +188,7 @@ const Bars = React.memo(
               style={{
                 font: `lighter ${barWidth * 0.06}rem sans-serif`,
               }}
-              x={i * (barWidth + 2) - 25} //25 is the offset on the y axis since it's rotated x is y and y is x axis
+              x={i * (barWidth + 2) - 35} //30 is the offset on the y axis since it's rotated x is y and y is x axis
               y={height}
               transform={`rotate(90,${i * (barWidth + 2)},${height})`}
             >
