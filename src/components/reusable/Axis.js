@@ -1,16 +1,16 @@
-import * as d3 from 'd3'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { format } from 'date-fns'
+import * as d3 from "d3";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { format } from "date-fns";
 
 export const ScaleAxis = ({ data }) => {
   const ticks = useMemo(() => {
-    const xScale = d3.scaleLinear().domain(data.domain).range(data.range)
-    console.log('SCALE', data)
+    const xScale = d3.scaleLinear().domain(data.domain).range(data.range);
+    console.log("SCALE", data);
     return xScale.ticks().map((value) => ({
       value,
       xOffset: xScale(value),
-    }))
-  }, [])
+    }));
+  }, []);
   /*   console.log('TICKS', ticks)
    */ return (
     <svg>
@@ -21,9 +21,9 @@ export const ScaleAxis = ({ data }) => {
           <text
             key={value}
             style={{
-              fontSize: '10px',
-              textAnchor: 'middle',
-              transform: 'translateY(20px)',
+              fontSize: "10px",
+              textAnchor: "middle",
+              transform: "translateY(20px)",
             }}
           >
             {value}
@@ -31,17 +31,17 @@ export const ScaleAxis = ({ data }) => {
         </g>
       ))}
     </svg>
-  )
-}
+  );
+};
 
 export const DateAxis = ({ data, containerHeight, margin, width }) => {
-  const ticksNumber = data?.length
+  const ticksNumber = data?.length;
   const ticks = useMemo(() => {
     return data?.map((el, i) => ({
-      value: format(new Date(el[0]), 'dd/MM'),
+      value: format(new Date(el[0]), "dd/MM"),
       xOffset: i * (width + 2),
-    }))
-  }, [data])
+    }));
+  }, [data]);
 
   return (
     <>
@@ -56,10 +56,10 @@ export const DateAxis = ({ data, containerHeight, margin, width }) => {
           <text
             key={value}
             style={{
-              fontSize: '8px',
-              textAnchor: 'middle',
-              transform: 'translateY(20px) translateX(-2px) rotate(90deg)',
-              fill: '#DDD',
+              fontSize: "8px",
+              textAnchor: "middle",
+              transform: "translateY(20px) translateX(-2px) rotate(90deg)",
+              fill: "#DDD",
             }}
           >
             {value}
@@ -67,8 +67,8 @@ export const DateAxis = ({ data, containerHeight, margin, width }) => {
         </g>
       ))}
     </>
-  )
-}
+  );
+};
 
 export const RandomAxis = ({
   data,
@@ -77,14 +77,14 @@ export const RandomAxis = ({
   leftCounterMargin = 0,
   margin,
 }) => {
-  const tickWidth = 10
-  const ticksNumber = data.length
+  const tickWidth = 10;
+  const ticksNumber = data.length;
   const ticks = useMemo(() => {
     return data.map((el, i) => ({
       value: el,
       xOffset: leftCounterMargin + i * tickWidth,
-    }))
-  }, [data])
+    }));
+  }, [data]);
 
   /*   console.log('TICKS', ticks, 'WIDTH', containerWidth, 'MARGIN', margin)
    */ return (
@@ -98,10 +98,10 @@ export const RandomAxis = ({
           <text
             key={value}
             style={{
-              fontSize: '8px',
-              textAnchor: 'middle',
-              transform: 'translateY(20px) translateX(-2px) rotate(90deg)',
-              fill: '#DDD',
+              fontSize: "8px",
+              textAnchor: "middle",
+              transform: "translateY(20px) translateX(-2px) rotate(90deg)",
+              fill: "#DDD",
             }}
           >
             {value}
@@ -109,64 +109,68 @@ export const RandomAxis = ({
         </g>
       ))}
     </>
-  )
-}
+  );
+};
 
 export const RandomAxisHorizontal = ({
   data,
   containerHeight,
-  xGap = 2,
+  containerWidth,
+  tickWidth,
   margin,
 }) => {
-  console.log('AXIS DATA', data)
-  const tickWidth = xGap
-  const ticksNumber = data.length
   const ticks = useMemo(() => {
     return data.map((el, i) => ({
       value: el,
-      xOffset: i * tickWidth + 75,
-    }))
-  }, [data])
-  margin = margin - xGap / 4 - 5
+      xOffset: tickWidth / 2 + i * (tickWidth + margin),
+    }));
+  }, [data, margin, tickWidth]);
+
   return (
     <>
       <line
-        x2={xGap * ticksNumber}
-        y2="0"
-        transform={`translate(${margin}, ${containerHeight - 90})`}
+        y1={containerHeight - 15}
+        x2={containerWidth}
+        y2={containerHeight - 15}
         stroke="currentColor"
       />
       <line
-        y2="6"
-        transform={`translate(${margin}, ${containerHeight - 90})`}
+        x1={0}
+        y1={containerHeight - 15}
+        x2={0}
+        y2={containerHeight - 10}
         stroke="currentColor"
       />
       <line
-        y2="6"
-        transform={`translate(${margin + xGap * ticksNumber}, ${
-          containerHeight - 90
-        })`}
+        x1={containerWidth}
+        y1={containerHeight - 15}
+        x2={containerWidth}
+        y2={containerHeight - 10}
         stroke="currentColor"
       />
       {ticks?.map(({ value, xOffset }, i) => (
-        <g
-          key={value}
-          transform={`translate(${margin + xOffset}, ${containerHeight - 90})`}
-        >
-          <line y2="6" stroke="currentColor" />
+        <g key={value}>
+          <line
+            x1={xOffset}
+            y1={containerHeight - 15}
+            x2={xOffset}
+            y2={containerHeight - 10}
+            stroke="currentColor"
+          />
           <text
             key={value}
             style={{
-              fontSize: '8px',
-              textAnchor: 'middle',
-              transform: `translateY(20px) translateX(0px)`,
-              fill: 'currentColor',
+              fontSize: "0.7rem",
+              textAnchor: "middle",
+              fill: "currentColor",
             }}
+            x={xOffset}
+            y={containerHeight}
           >
             {value}
           </text>
         </g>
       ))}
     </>
-  )
-}
+  );
+};

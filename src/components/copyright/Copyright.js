@@ -2,7 +2,7 @@ import { Link, Typography } from '@mui/material'
 
 const Copyright = ({ name, url }) => {
   return (
-    <Typography variant="body2" color="text.secondary" align="center">
+    <Typography variant="body2" color="text.primary" align="center">
       {'Copyright © '}
       <Link color="inherit" href={url}>
         {name}

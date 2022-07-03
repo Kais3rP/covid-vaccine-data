@@ -117,30 +117,12 @@ export const ageRange = [
   "80+",
 ];
 
-export const bgColors = [
-  "rgba(255, 99, 132, 0.2)",
-  "rgba(54, 162, 235, 0.2)",
-  "rgba(255, 206, 86, 0.2)",
-  "rgba(75, 192, 192, 0.2)",
-  "rgba(153, 102, 255, 0.2)",
-  "rgba(255, 159, 64, 0.2)",
-];
-
-export const borderColors = [
-  "rgba(255, 99, 132, 1)",
-  "rgba(54, 162, 235, 1)",
-  "rgba(255, 206, 86, 1)",
-  "rgba(75, 192, 192, 1)",
-  "rgba(153, 102, 255, 1)",
-  "rgba(255, 159, 64, 1)",
-];
-
 export const barColors = [
-  "#263238",
-  "#546e7a",
-  "#90a4ae",
-  "#eceff1",
-  "#bbbbbb",
+  "#ebe9fb",
+  "#c4bef4",
+  "#9d92ec",
+  "#7567e5",
+  "#291a98",
 ];
 
 export const brands = [
@@ -149,6 +131,7 @@ export const brands = [
   { key: "Vaxzevria (AstraZeneca)", label: "Astrazeneca" },
   { key: "Janssen", label: "Janssen" },
   { key: "Pfizer Pediatrico", label: "Pediatric Pfizer" },
+  { key: "Novavax", label: "Novavax" },
 ];
 
 export const ageRangePeople = {

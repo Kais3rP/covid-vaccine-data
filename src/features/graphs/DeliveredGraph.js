@@ -25,7 +25,7 @@ import {
 
 const DeliveredGraph = () => {
   const { data, isLoading } = useSuppliedData();
-  console.log("DELIBVERED", data);
+
   const [supplierSelected, setSupplierSelected] = useState(null);
   const onClick = (data) => {
     setSupplierSelected((d) => (d && d[0] === data[0] ? null : data));
@@ -43,9 +43,7 @@ const DeliveredGraph = () => {
             ? `${supplierSelected[0]} - ${supplierSelected[1].toLocaleString(
                 "en-US"
               )}`
-            : data?.data
-                .find((el) => el[0] === "total")[1]
-                .toLocaleString('it')
+            : data?.data.find((el) => el[0] === "total")[1].toLocaleString("it")
         }
         badgePosition={"right"}
       />
@@ -62,13 +60,18 @@ export default DeliveredGraph;
 
 const Graph = ({ data, onClick, supplierSelected }) => {
   const { width, ref } = useWidth();
-  const barWidth = 70;
-  const height = 800;
-  const barMargin = 100;
+  /* Center graph */
+  const barMargin = 60;
+  const barWidth = useMemo(
+    () => (data ? width / data.data.length - barMargin / 2 : 0),
+    [data, width]
+  );
+  const height = 600;
+  const graphMargin = useMemo(
+    () => (data ? width - (data.data.length * (barWidth + barMargin)) / 2 : 0),
+    [data, width, barWidth, barMargin]
+  );
 
-  const leftCounterMargin = 0;
-  const barXMargin = 70;
-  const margin = 150; /* (width - (barXMargin + barWidth) * data?.data.length) / 2 */
   return (
     <Box sx={{ position: "relative" }}>
       <svg
@@ -78,9 +81,9 @@ const Graph = ({ data, onClick, supplierSelected }) => {
         id="suppliers-graph"
         data-name="week-graph"
         xmlns="http://www.w3.org/2000/svg"
-        viewBox={"0 420 800 350"}
+        viewBox={`0 0 ${width} ${height}`}
       >
-        <g transform={`translate(${margin} 0)`}>
+        <g>
           {data?.data
             .filter((el) => el[0] !== "total")
             .map((el, i) => (
@@ -92,7 +95,7 @@ const Graph = ({ data, onClick, supplierSelected }) => {
                     <BarTooltip
                       data={{
                         type: el[0],
-                        value: el[1].toLocaleString('it'),
+                        value: el[1].toLocaleString("it"),
                       }}
                     />
                   }
@@ -107,15 +110,15 @@ const Graph = ({ data, onClick, supplierSelected }) => {
                         ? "#F00"
                         : barColors[i]
                     }
-                    x={i * (barWidth + barXMargin)}
+                    x={i * (barWidth + barMargin)}
                     y={height - barMargin - formatData(el[1])}
                   />
                 </HtmlTooltip>
                 <text
-                  x={i * (barWidth + barXMargin) - 5}
+                  x={i * (barWidth + barMargin)}
                   y={height - barMargin - formatData(el[1]) - 10}
                 >
-                  {el[1].toLocaleString('it')}
+                  {el[1].toLocaleString("it")}
                 </text>
               </g>
             ))}
@@ -124,9 +127,8 @@ const Graph = ({ data, onClick, supplierSelected }) => {
           data={data?.brands.map((el) => el.label)}
           containerWidth={width}
           containerHeight={height}
-          leftCounterMargin={leftCounterMargin}
-          xGap={barWidth + barXMargin}
-          margin={margin}
+          tickWidth={barWidth}
+          margin={barMargin}
         />
       </svg>
     </Box>
@@ -141,29 +143,6 @@ const BarTooltip = ({ data }) => {
       <Typography color="inherit">{data.type}</Typography>
       <Typography color="inherit">{data.value}</Typography>
     </>
-  );
-};
-
-const Legend = ({ data }) => {
-  console.log("LEGEND", Object.entries(data));
-  return (
-    <Box sx={{ mt: 3 }}>
-      {Object.entries(data).map((el) => (
-        <Box key={el[0]} sx={{ display: "flex", mb: 1 }}>
-          <Box
-            sx={{
-              mr: 2,
-              width: "30px",
-              height: "30px",
-              borderRadius: "50%",
-              backgroundColor: el[1],
-            }}
-          />
-
-          <Typography variant="h7">{el[0]}</Typography>
-        </Box>
-      ))}
-    </Box>
   );
 };
 

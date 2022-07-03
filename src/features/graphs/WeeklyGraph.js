@@ -19,25 +19,25 @@ import HtmlTooltip from "../../components/reusable/HtmlTooltip";
 import { brands, barColors } from "../../data";
 
 const legendData = brands.reduce((obj, el, i) => {
-  obj[el.label] = barColors[i]
-  return obj
-}, {})
+  obj[el.label] = barColors[i];
+  return obj;
+}, {});
 
 const WeeklyGraph = () => {
   const { data, isLoading } = useAdministeredData();
 
   return (
     <Box>
-      <Header title={'Administrations weekly trend'} />
+      <Header title={"Administrations weekly trend"} />
 
       <Grid
         container
         sx={{
-          backgroundColor: 'primary.main',
+          backgroundColor: "primary.main",
           pt: 2,
           pb: 2,
           mt: 2,
-          display: 'flex',
+          display: "flex",
         }}
       >
         <Grid item xs={12} md={3}>
@@ -51,26 +51,26 @@ const WeeklyGraph = () => {
           xs={12}
           md={9}
           sx={{
-            display: 'flex',
+            display: "flex",
           }}
         >
           <Container
             sx={{
               m: 2,
-              display: 'flex',
-              justifyContent: 'center',
-              flexDirection: 'column',
+              display: "flex",
+              justifyContent: "center",
+              flexDirection: "column",
             }}
           >
-            {' '}
-            <Typography variant={'h7'} align={'center'}>
+            {" "}
+            <Typography variant={"h7"} align={"center"}>
               *Pass with mouse on the graph bars to show the weekly data
             </Typography>
             <Box>
               <Graph data={data} isLoading={isLoading} />
             </Box>
-            <Box sx={{ mx: 'auto', mt: 2 }}>
-              <Typography variant={'h7'} align={'center'}>
+            <Box sx={{ mx: "auto", mt: 2 }}>
+              <Typography variant={"h7"} align={"center"}>
                 *Move selectors to zoom left and right
               </Typography>
             </Box>
@@ -78,10 +78,10 @@ const WeeklyGraph = () => {
         </Grid>
       </Grid>
     </Box>
-  )
-}
+  );
+};
 
-export default WeeklyGraph
+export default WeeklyGraph;
 
 const Graph = React.memo(({ data, isLoading }) => {
   const { width, ref } = useWidth();
@@ -101,9 +101,9 @@ const Graph = React.memo(({ data, isLoading }) => {
   }, [width, barsData]);
 
   return isLoading ? (
-    'Loading...'
+    "Loading..."
   ) : (
-    <Box sx={{ position: 'relative' }}>
+    <Box sx={{ position: "relative" }}>
       <svg
         width="100%"
         height={height}
@@ -111,6 +111,7 @@ const Graph = React.memo(({ data, isLoading }) => {
         id="week-graph"
         data-name="week-graph"
         xmlns="http://www.w3.org/2000/svg"
+        viewBox={`0 0 ${width} ${height}`}
       >
         <Bars
           brandsData={data?.brands}
@@ -118,14 +119,6 @@ const Graph = React.memo(({ data, isLoading }) => {
           height={height}
           barWidth={barWidth}
         />
-        {/*   <DateAxis
-          data={data?.data}
-          containerWidth={width}
-          containerHeight={height}
-          zoom={_zoom}
-          isZoomingLeft={isZoomingLeft}
-          leftCounterMargin={leftCounterMargin}
-        /> */}
       </svg>
       <Container>
         <Slider
@@ -187,6 +180,7 @@ const Bars = React.memo(
             <text
               style={{
                 font: `lighter ${barWidth * 0.06}rem sans-serif`,
+                fill: "#DDD",
               }}
               x={i * (barWidth + 2) - 35} //30 is the offset on the y axis since it's rotated x is y and y is x axis
               y={height}
@@ -204,19 +198,19 @@ const Bars = React.memo(
 const BarTooltip = React.memo(({ data }) => {
   return (
     <>
-      {' '}
+      {" "}
       <Typography color="inherit">
-        {data.data.brand === 'Pfizer Pediatrico'
-          ? 'Pediatric Pfizer'
+        {data.data.brand === "Pfizer Pediatrico"
+          ? "Pediatric Pfizer"
           : data.data.brand}
       </Typography>
       <Typography color="inherit">
-        {data.data.value.toLocaleString('it')}
+        {data.data.value.toLocaleString("it")}
       </Typography>
       <Typography color="inherit">{`from ${format(
         new Date(data?.dateRange[0]),
-        'dd/MM',
-      )} to ${format(new Date(data?.dateRange[1]), 'dd/MM')}`}</Typography>
+        "dd/MM"
+      )} to ${format(new Date(data?.dateRange[1]), "dd/MM")}`}</Typography>
     </>
   );
 });
@@ -225,13 +219,13 @@ const Legend = React.memo(({ data }) => {
   return (
     <Box sx={{ mt: 3 }}>
       {Object.entries(data).map((el) => (
-        <Box key={el[0]} sx={{ display: 'flex', mb: 1 }}>
+        <Box key={el[0]} sx={{ display: "flex", mb: 1 }}>
           <Box
             sx={{
               mr: 2,
-              width: '30px',
-              height: '30px',
-              borderRadius: '50%',
+              width: "30px",
+              height: "30px",
+              borderRadius: "50%",
               backgroundColor: el[1],
             }}
           />
@@ -247,4 +241,4 @@ const formatData = (value) => value / 5000;
 const formatRange = (date) => [
   date,
   new Date(new Date(date).setDate(new Date(date).getDate() + 7)).toISOString(),
-]
+];

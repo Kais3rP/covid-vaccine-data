@@ -423,6 +423,9 @@ export const useSuppliedData = () => {
     o[curr.key] = 0;
     return o;
   }, {});
+
+  console.log(defaultObj);
+
   const { data, isLoading, isSuccess } = useGetSuppliedQuery();
   const computedData = useMemo(() => {
     if (!data) return;
@@ -437,6 +440,8 @@ export const useSuppliedData = () => {
       });
     }
   }, [data]);
+
+  console.log("SUPPLIED DATA", data, computedData);
 
   return {
     data: {

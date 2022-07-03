@@ -46,7 +46,7 @@ const AnagraphicGraph = () => {
     obj[el.label] = barColors[i];
     return obj;
   }, {});
-
+  console.log("LEGEND DAta", legendData);
   return isLoading || !computedData ? (
     "Loading..."
   ) : (
@@ -120,21 +120,11 @@ const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
         id="anagraphic-graph"
         data-name="week-graph"
         xmlns="http://www.w3.org/2000/svg"
-        //transform={`rotate(90)`}
+        viewBox={`0 0 ${width} ${height}`}
       >
         <g>
           {data?.data.map((el, i) => (
             <g key={el.eta}>
-              {/*  <text
-                className="bar_text"
-                // transform={`rotate(-90)`}
-                 x={-(height + 40)}
-                y={barWidth / 2 + i * (barWidth + barMarginX)}
-                x={i * barWidth} // SVG is rotated so x is y and viceversa
-                y={
-                  height // offset for label
-                }
-              >{`Range ${el.eta}`}</text> */}
               {doseTypes.map((type, j) => (
                 <HtmlTooltip
                   key={type.key}
@@ -171,7 +161,7 @@ const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
                     fill={
                       ageRangeSelected?.range === el.eta &&
                       ageRangeSelected?.type.key === type.key
-                        ? "#bbbbbb"
+                        ? "#dfd"
                         : barColors[j]
                     }
                     x={

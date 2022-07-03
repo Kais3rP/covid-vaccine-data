@@ -3,6 +3,7 @@ import {
   Box,
   Container,
   Grid,
+  Link,
   Toolbar,
   Typography,
 } from "@mui/material";
@@ -66,17 +67,20 @@ const Layout = ({ children, ...props }) => {
         {children}
       </Container>
       {/* Footer */}
-      <Box sx={{ bgcolor: "background.paper", p: 6 }} component="footer">
-        <Typography variant="h6" align="center" gutterBottom>
-          Footer
-        </Typography>
+      <Box sx={{ bgcolor: "primary.main", p: 6 }} component="footer">
         <Typography
-          variant="subtitle1"
+          sx={{ fontSize: "0.8rem" }}
           align="center"
-          color="text.secondary"
-          component="p"
+          gutterBottom
         >
-          Something here to give the footer a purpose!
+          Data source:{" "}
+          <Link
+            sx={{ fontSize: "1rem" }}
+            color="text.primary"
+            href="https://github.com/italia/covid19-opendata-vaccini"
+          >
+            https://github.com/italia/covid19-opendata-vaccini
+          </Link>
         </Typography>
         <Copyright name={"Cesare Polonara"} url={URL} />
       </Box>

@@ -22,7 +22,7 @@ const BadgeTextGraph = ({ title, data, badgePosition }) => {
         alt="coccarda"
         width={6}
         left={badgePosition === 'left' ? '20px' : '100%'}
-        top="-50px"
+        top="-40px"
         position={'absolute'}
       />
 
