@@ -11,7 +11,6 @@ import List from "./List";
 const AdministrationSites = () => {
   let { data, isLoading, isSuccess } = useAdministrationSitesData();
   const currentRegion = useSelector((state) => state.map.region);
-  console.log("DATA", data, "REGION", currentRegion);
 
   return isLoading || !isSuccess ? (
     "Loading..."

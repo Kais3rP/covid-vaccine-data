@@ -1,18 +1,17 @@
-import React, { useState } from 'react'
-import { DataGrid } from '@mui/x-data-grid'
-import { Box } from '@mui/system'
-import '../../App.css'
-import { useSelector } from 'react-redux'
+import React, { useState } from "react";
+import { DataGrid } from "@mui/x-data-grid";
+import { Box } from "@mui/system";
+import "../../App.css";
+import { useSelector } from "react-redux";
 
 const List = ({ data }) => {
-  console.log('LIST DATA', data)
   return (
     data && (
       <Box sx={{ height: 400 }}>
-        {' '}
+        {" "}
         <DataGrid
           {...data}
-          getRowClassName={(params) => 'grid-cell'}
+          getRowClassName={(params) => "grid-cell"}
           hideFooterPagination={false}
           disableExtendRowFullWidth
           pageSize={5}
@@ -21,7 +20,7 @@ const List = ({ data }) => {
         />
       </Box>
     )
-  )
-}
+  );
+};
 
-export default List
+export default List;

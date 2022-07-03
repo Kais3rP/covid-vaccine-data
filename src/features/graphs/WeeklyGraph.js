@@ -138,12 +138,11 @@ const Graph = React.memo(({ data, isLoading }) => {
 
 const Bars = React.memo(
   ({ barsData, brandsData, height, margin, barWidth }) => {
-    console.log("BARS DATA", barsData);
     const barMargin = 1;
     return (
       <g>
         {barsData.map((el, i) => (
-          <g>
+          <g key={el[0]}>
             {brandsData.map((brand, j) => (
               <HtmlTooltip
                 key={brand.key}

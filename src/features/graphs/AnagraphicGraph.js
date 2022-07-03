@@ -46,7 +46,7 @@ const AnagraphicGraph = () => {
     obj[el.label] = barColors[i];
     return obj;
   }, {});
-  console.log("LEGEND DAta", legendData);
+
   return isLoading || !computedData ? (
     "Loading..."
   ) : (
@@ -103,14 +103,13 @@ const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
   const [doseTypes, setDoseTypes] = useState(data?.doseTypes);
 
   const onMouseEnter = (type) => {
-    console.log("ENTERED", type);
     setDoseTypes((types) => {
       const orderedTypes = [...types];
       types[types.length - 1] = type;
       return orderedTypes;
     });
   };
-  console.log("DOSE TYPES", doseTypes);
+
   return (
     <Box sx={{ position: "relative" }}>
       <svg
@@ -225,6 +224,5 @@ const Legend = ({ data, isDark }) => {
 };
 
 const formatData = (value, width, total) => {
-  console.log(total);
   return (width * value) / total;
 };

@@ -313,6 +313,7 @@ export const useAdministeredData = () => {
       "Vaxzevria (AstraZeneca)": 0,
       Janssen: 0,
       "Pfizer Pediatrico": 0,
+      Novavax: 0,
     };
 
     let prevDate;
@@ -424,8 +425,6 @@ export const useSuppliedData = () => {
     return o;
   }, {});
 
-
-  
   const { data, isLoading, isSuccess } = useGetSuppliedQuery();
   const computedData = useMemo(() => {
     if (!data) return;
@@ -437,15 +436,13 @@ export const useSuppliedData = () => {
       return Object.entries({
         ...temp,
         total: Object.values(temp).reduce((sum, curr) => sum + curr, 0),
-      });
+      }).sort((a, b) => b[1] - a[1]);
     }
   }, [data]);
 
-
-  
   return {
     data: {
-      data: computedData.sort((a,b) => a.),
+      data: computedData,
       brands,
     },
     isLoading,

@@ -122,6 +122,7 @@ export const barColors = [
   "#c4bef4",
   "#9d92ec",
   "#7567e5",
+  "#3422c4",
   "#291a98",
 ];
 
