@@ -94,7 +94,7 @@ export const useAnagraphicData = () => {
     isSuccess: peopleIsSuccess,
   } = useGetAnagraphicPopulationDataQuery();
   let { data, isLoading, isSuccess } = useGetAdministeredQuery();
-  console.log("TEST DATA ANAGRAPHIC", totalData, peopleData, data);
+
   /**
    *
    *  MANIPULATED DATA
@@ -213,7 +213,7 @@ export const useAnagraphicData = () => {
       );
     }
   }, [data, peopleData, totalData, agesArr, regions]);
-  console.group("COMPUTED DATA", computedData);
+
   return {
     data: {
       data: computedData,
@@ -424,8 +424,8 @@ export const useSuppliedData = () => {
     return o;
   }, {});
 
-  console.log(defaultObj);
 
+  
   const { data, isLoading, isSuccess } = useGetSuppliedQuery();
   const computedData = useMemo(() => {
     if (!data) return;
@@ -441,11 +441,11 @@ export const useSuppliedData = () => {
     }
   }, [data]);
 
-  console.log("SUPPLIED DATA", data, computedData);
 
+  
   return {
     data: {
-      data: computedData,
+      data: computedData.sort((a,b) => a.),
       brands,
     },
     isLoading,

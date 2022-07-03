@@ -179,7 +179,7 @@ const Bars = React.memo(
             ))}
             <text
               style={{
-                font: `lighter ${barWidth * 0.06}rem sans-serif`,
+                font: `lighter 0.5rem sans-serif`,
                 fill: "#DDD",
               }}
               x={i * (barWidth + 2) - 35} //30 is the offset on the y axis since it's rotated x is y and y is x axis
