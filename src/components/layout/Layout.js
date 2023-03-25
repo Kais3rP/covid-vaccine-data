@@ -11,8 +11,8 @@ import React from "react";
 import Copyright from "../copyright/Copyright";
 import CameraIcon from "@mui/icons-material/CameraAlt";
 import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
-import badge from "../../img/coccarda.svg";
 import { Badge } from "../reusable/Badge";
+import Cockade from "../reusable/svg/Cockade";
 
 const URL = "http://cesarepolonara.com/";
 
@@ -48,8 +48,9 @@ const Layout = ({ children, ...props }) => {
           }}
           maxWidth="false"
         >
-          <Badge src={badge} alt="badge" width={6} />
-
+          <Box sx={{ position: "relative", width:"4rem", mr:4 }}>
+            <Cockade />
+          </Box>
           <Typography
             component="h1"
             variant="h4"
@@ -68,11 +69,7 @@ const Layout = ({ children, ...props }) => {
       </Container>
       {/* Footer */}
       <Box sx={{ bgcolor: "primary.main", p: 6 }} component="footer">
-        <Typography
-          sx={{ fontSize: "0.8rem" }}
-          align="center"
-          gutterBottom
-        >
+        <Typography sx={{ fontSize: "0.8rem" }} align="center" gutterBottom>
           Data source:{" "}
           <Link
             sx={{ fontSize: "1rem" }}

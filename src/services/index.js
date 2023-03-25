@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 // Define a service using a base URL and expected endpoints
 export const covidApi = createApi({
-  reducerPath: 'pokemonApi',
+  reducerPath: 'covidApi',
   baseQuery: fetchBaseQuery({
     baseUrl:
       'https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/',

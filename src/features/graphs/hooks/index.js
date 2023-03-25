@@ -15,7 +15,6 @@ import {
   sumObjectsByKeyInclusive,
   sumObjectsByKeySelective,
 } from "../../../utils";
-import { KeyboardReturnRounded, LegendToggle } from "@mui/icons-material";
 import {
   ageRange,
   ageRangePeople,
@@ -131,37 +130,12 @@ export const useAnagraphicData = () => {
         d2: 0,
         db1: 0,
         db2: 0,
+        db3: 0,
         people: 0,
         totale: 0,
       })),
     []
   );
-
-  /*   let defaultObj = useMemo(
-    () =>
-      peopleData && totalData
-        ? regions.reduce((obj, el) => {
-            if (el === "Total") obj[el] = totalData;
-            else {
-              const _agesArr = agesArr.map((el2) => ({
-                ...el2,
-                people: peopleData.data.find((el3) => {
-                  return (
-                    (el === "Provincia Autonoma Trento"
-                      ? el3.reg === "P.A. Trento"
-                      : el === "Valle d'Aosta / Vallée d'Aoste"
-                      ? el3.reg === "Valle d'Aosta"
-                      : el === el3.reg) && el3.eta === el2.eta
-                  );
-                })?.totale_popolazione,
-              }));
-              obj[el] = _agesArr;
-            }
-            return obj;
-          }, {})
-        : null,
-    [peopleData, totalData, agesArr, regions]
-  ); */
 
   const computedData = useMemo(() => {
     let defaultObj =
@@ -221,12 +195,13 @@ export const useAnagraphicData = () => {
         { key: "people", label: "Total" },
         { key: "d1", label: "First dose" },
         { key: "d2", label: "Second dose" },
-        { key: "db1", label: "Third dose" },
-        { key: "db2", label: "Fourth dose" },
+        { key: "db1", label: "Booster" },
+        { key: "db2", label: "Second Booster" },
+        { key: "db3", label: "Third Booster" },
       ],
     },
-    isLoading,
-    isSuccess,
+    isLoading: totalIsLoading || peopleIsLoading,
+    isSuccess: totalIsSuccess && peopleIsSuccess,
   };
 };
 

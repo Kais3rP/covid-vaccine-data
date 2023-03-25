@@ -18,10 +18,8 @@ import { useWidth } from "../../hooks";
 import { format } from "date-fns";
 import { barColors } from "../../data";
 import { SignalCellularNullRounded } from "@mui/icons-material";
-import {
-  RandomAxis,
-  RandomAxisHorizontal,
-} from "../../components/reusable/Axis";
+import { RandomAxisHorizontal } from "../../components/reusable/Axis";
+import Spinner from "../../components/reusable/Spinner";
 
 const DeliveredGraph = () => {
   const { data, isLoading } = useSuppliedData();
@@ -32,7 +30,7 @@ const DeliveredGraph = () => {
   };
 
   return isLoading ? (
-    "Loading..."
+    <Spinner isLoading={isLoading} />
   ) : (
     <Box>
       <Header title={"Supplier distribution"} />
@@ -63,14 +61,10 @@ const Graph = ({ data, onClick, supplierSelected }) => {
   /* Center graph */
   const barMargin = 60;
   const barWidth = useMemo(
-    () => (data ? width / data.data.length - barMargin / 2 : 0),
+    () => (data && width !== 0 ? width / data.data.length - barMargin / 2 : 0),
     [data, width]
   );
   const height = 600;
-  const graphMargin = useMemo(
-    () => (data ? width - (data.data.length * (barWidth + barMargin)) / 2 : 0),
-    [data, width, barWidth, barMargin]
-  );
 
   return (
     <Box sx={{ position: "relative" }}>

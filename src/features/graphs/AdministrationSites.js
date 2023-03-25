@@ -2,6 +2,7 @@ import { Box, Container, Grid, Typography } from "@mui/material";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import Header from "../../components/reusable/Header";
+import Spinner from "../../components/reusable/Spinner";
 import { useGetAdministrationSitesQuery } from "../../services";
 import Map from "../italymap/Map";
 import BadgeTextGraph from "./BadgeTextGraph";
@@ -13,7 +14,7 @@ const AdministrationSites = () => {
   const currentRegion = useSelector((state) => state.map.region);
 
   return isLoading || !isSuccess ? (
-    "Loading..."
+    <Spinner isLoading={isLoading || !isSuccess} />
   ) : (
     <Box sx={{ mt: 3 }}>
       <Header

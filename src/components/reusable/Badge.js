@@ -1,6 +1,6 @@
 import { styled } from "@mui/system";
 
-export const Badge = styled("img")((props) => ({
+export const Badge = styled("div")((props) => ({
   width: "72px",
   position: props.position || "relative",
   padding: "0 0 0 0",

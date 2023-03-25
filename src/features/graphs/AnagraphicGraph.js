@@ -1,21 +1,15 @@
-import { Box, Container, Grid, Slider, Typography } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
 import Header from "../../components/reusable/Header";
 import HtmlTooltip from "../../components/reusable/HtmlTooltip";
 import BadgeTextGraph from "./BadgeTextGraph";
-import {
-  useAnagraphicData,
-  useAnagraphicRegionsData,
-  useTotalAdministrations,
-} from "./hooks";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import debounce from "lodash.debounce";
-import { useAdministeredData } from "./hooks";
+import { useAnagraphicData } from "./hooks";
+import { useCallback, useMemo, useState } from "react";
 import Zoom from "@mui/material/Zoom";
 import { useWidth } from "../../hooks";
-import { format } from "date-fns";
 import { barColors } from "../../data";
 import Map from "../italymap/Map";
+import Spinner from "../../components/reusable/Spinner";
 
 const AnagraphicGraph = () => {
   const [ageRangeSelected, setAgeRangeSelected] = useState(null);
@@ -24,14 +18,15 @@ const AnagraphicGraph = () => {
   const { data, isLoading } = useAnagraphicData();
 
   const computedData = useMemo(() => {
-    if (!data.data) return;
-    if (currentRegion && currentRegion?.type === "age") {
-      return { ...data, data: data.data[currentRegion.id] };
-    } else return { ...data, data: data.data.Total };
+    if (!data.data) return null;
+
+    return currentRegion && currentRegion?.type === "age"
+      ? { ...data, data: data.data[currentRegion.id] }
+      : { ...data, data: data.data.Total };
   }, [data, currentRegion]);
 
   const totalNumber = useMemo(() => {
-    if (!computedData) return;
+    if (!computedData) return 0;
     if (ageRangeSelected)
       return computedData.data
         .find((el) => el.eta === ageRangeSelected.range)
@@ -47,8 +42,21 @@ const AnagraphicGraph = () => {
     return obj;
   }, {});
 
+  const handleRectClick = useCallback(
+    (el, type, idx) => {
+      if (
+        ageRangeSelected &&
+        ageRangeSelected.type.key === type.key &&
+        ageRangeSelected.range === el.eta
+      )
+        setAgeRangeSelected(null);
+      else setAgeRangeSelected({ range: el.eta, type, idx });
+    },
+    [ageRangeSelected]
+  );
+
   return isLoading || !computedData ? (
-    "Loading..."
+    <Spinner isLoading={isLoading || !computedData} />
   ) : (
     <Box>
       <Header title={"Administrations following age ranges"} />
@@ -69,15 +77,7 @@ const AnagraphicGraph = () => {
         <Grid item xs={12} md={6}>
           <Graph
             data={computedData}
-            onClick={(el, type, idx) => {
-              if (
-                ageRangeSelected &&
-                ageRangeSelected.type.key === type.key &&
-                ageRangeSelected.range === el.eta
-              )
-                setAgeRangeSelected(null);
-              else setAgeRangeSelected({ range: el.eta, type, idx });
-            }}
+            onClick={handleRectClick}
             ageRangeSelected={ageRangeSelected}
             isRegionSelected={currentRegion && currentRegion.type === "age"}
           />
@@ -100,16 +100,6 @@ const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
   const barWidth = 45;
   const height = 500;
 
-  const [doseTypes, setDoseTypes] = useState(data?.doseTypes);
-
-  const onMouseEnter = (type) => {
-    setDoseTypes((types) => {
-      const orderedTypes = [...types];
-      types[types.length - 1] = type;
-      return orderedTypes;
-    });
-  };
-
   return (
     <Box sx={{ position: "relative" }}>
       <svg
@@ -124,7 +114,7 @@ const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
         <g>
           {data?.data.map((el, i) => (
             <g key={el.eta}>
-              {doseTypes.map((type, j) => (
+              {data?.doseTypes.map((type, j) => (
                 <HtmlTooltip
                   key={type.key}
                   TransitionComponent={Zoom}
@@ -138,14 +128,14 @@ const Graph = ({ data, onClick, ageRangeSelected, isRegionSelected }) => {
                         percentage: ((el[type.key] * 100) / el.people).toFixed(
                           1
                         ),
-                        total: el.people.toLocaleString("it"),
+                        total: el.people?.toLocaleString("it"),
                         isTotal: type.key === "people",
                       }}
                     />
                   }
                 >
                   <rect
-                    onMouseEnter={(e) => onMouseEnter(type)}
+                    // onMouseEnter={(e) => onMouseEnter(type)}
                     onClick={() => onClick(el, type, i)}
                     className="bar"
                     height={barWidth}
@@ -224,5 +214,5 @@ const Legend = ({ data, isDark }) => {
 };
 
 const formatData = (value, width, total) => {
-  return (width * value) / total;
+  return Math.abs((width * value) / total) || 0;
 };

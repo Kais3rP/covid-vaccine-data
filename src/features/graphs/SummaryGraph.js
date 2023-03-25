@@ -1,28 +1,25 @@
 import { Box, Container, Grid, Typography } from "@mui/material";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
+import Spinner from "../../components/reusable/Spinner";
 import Map from "../italymap/Map";
 import { useSummaryData } from "./hooks";
 import List from "./List";
 
 const SummaryGraph = () => {
-  let {
-    data: summaryData,
-    isLoading: summaryIsLoading,
-    isSuccess: summaryIsSuccess,
-  } = useSummaryData();
+  let { data, isLoading, isSuccess } = useSummaryData();
   const currentRegion = useSelector((state) => state.map.region);
-  summaryData = useMemo(() => {
+  const summaryData = useMemo(() => {
     return currentRegion && currentRegion.type === "summary"
       ? {
-          columns: summaryData.columns,
-          rows: summaryData.rows.filter((el) => el.region === currentRegion.id),
+          columns: data.columns,
+          rows: data.rows.filter((el) => el.region === currentRegion.id),
         }
-      : summaryData;
-  }, [currentRegion, summaryData]);
+      : data;
+  }, [currentRegion, data]);
 
-  return summaryIsLoading || !summaryIsSuccess ? (
-    "Loading..."
+  return isLoading || isSuccess ? (
+    <Spinner isLoading={isLoading || !summaryData} />
   ) : (
     <Box sx={{ mt: 3 }}>
       {" "}

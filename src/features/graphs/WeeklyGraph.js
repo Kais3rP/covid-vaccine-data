@@ -17,6 +17,7 @@ import { useWidth } from "../../hooks";
 import { format } from "date-fns";
 import HtmlTooltip from "../../components/reusable/HtmlTooltip";
 import { brands, barColors } from "../../data";
+import Spinner from "../../components/reusable/Spinner";
 
 const legendData = brands.reduce((obj, el, i) => {
   obj[el.label] = barColors[i];
@@ -101,7 +102,7 @@ const Graph = React.memo(({ data, isLoading }) => {
   }, [width, barsData]);
 
   return isLoading ? (
-    "Loading..."
+    <Spinner isLoading={isLoading || !barsData} />
   ) : (
     <Box sx={{ position: "relative" }}>
       <svg

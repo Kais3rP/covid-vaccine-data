@@ -1,20 +1,20 @@
-import { Container, Typography, Box, Grid } from '@mui/material'
-import React from 'react'
-import badge from '../../img/coccarda.svg'
-import { Badge } from '../../components/reusable/Badge'
-import useMediaQuery from '@mui/material/useMediaQuery'
+import { Container, Typography, Box, Grid } from "@mui/material";
+import React from "react";
+import { Badge } from "../../components/reusable/Badge";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import Cockade from "../../components/reusable/svg/Cockade";
 
 const TextGraph = ({ Comp1, Comp2, title }) => {
-  const matches = useMediaQuery('(min-width:900px)')
+  const matches = useMediaQuery("(min-width:900px)");
   return (
     <Box sx={{ mt: 2 }}>
       <Container
         sx={{
           pb: 2,
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'flex-end',
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "flex-end",
         }}
       >
         <Typography color="primary" variant="h5" sx={{ mb: 3 }}>
@@ -25,11 +25,11 @@ const TextGraph = ({ Comp1, Comp2, title }) => {
         container
         sx={{
           p: 4,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'flex-end',
-          flexWrap: 'wrap',
-          backgroundColor: 'primary.main',
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "flex-end",
+          flexWrap: "wrap",
+          backgroundColor: "primary.main",
         }}
       >
         <Grid
@@ -37,22 +37,24 @@ const TextGraph = ({ Comp1, Comp2, title }) => {
           xs={12}
           md={6}
           sx={{
-            position: 'relative',
+            position: "relative",
             pb: 2,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          <Badge
-            src={badge}
-            alt="coccarda"
-            width={6}
-            position="absolute"
-            top="-80px"
-            left="50%"
-          />
+          <Box
+            sx={{
+              position: "absolute",
+              width: "4rem",
+              top: 0,
+              transform: "translateY(-55%)",
+            }}
+          >
+            <Cockade />
+          </Box>
           {Comp1 && <Comp1 />}
         </Grid>
         <Grid
@@ -60,29 +62,31 @@ const TextGraph = ({ Comp1, Comp2, title }) => {
           xs={12}
           md={6}
           sx={{
-            position: 'relative',
+            position: "relative",
             pb: 2,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
           {matches && (
-            <Badge
-              src={badge}
-              alt="coccarda"
-              width={6}
-              position="absolute"
-              top="-80px"
-              left="50%"
-            />
+            <Box
+              sx={{
+                position: "absolute",
+                width: "4rem",
+                top: 0,
+                transform: "translateY(-55%)",
+              }}
+            >
+              <Cockade />
+            </Box>
           )}
           {Comp2 && <Comp2 />}
         </Grid>
       </Grid>
     </Box>
-  )
-}
+  );
+};
 
-export default TextGraph
+export default TextGraph;

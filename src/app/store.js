@@ -1,4 +1,4 @@
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
+import { configureStore } from '@reduxjs/toolkit'
 import { setupListeners } from '@reduxjs/toolkit/query'
 import { covidApi } from '../services'
 import mapReducer from '../features/italymap/map.slice.js'
@@ -10,6 +10,6 @@ export const store = configureStore({
     map: mapReducer,
     graphs: graphsReducer,
   },
-  middleWare: (getDefaultMiddleware) =>
+  middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(covidApi.middleware),
 })

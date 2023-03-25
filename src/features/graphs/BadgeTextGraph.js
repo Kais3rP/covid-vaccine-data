@@ -1,7 +1,6 @@
 import { Container, Typography, Box } from '@mui/material'
 import { Badge } from '../../components/reusable/Badge'
 import React from 'react'
-import coccarda from '../../img/coccarda.svg'
 import gum from '../../img/gum.png'
 
 const BadgeTextGraph = ({ title, data, badgePosition }) => {
@@ -18,7 +17,6 @@ const BadgeTextGraph = ({ title, data, badgePosition }) => {
       maxWidth="false"
     >
       <Badge
-        src={coccarda}
         alt="coccarda"
         width={6}
         left={badgePosition === 'left' ? '20px' : '100%'}

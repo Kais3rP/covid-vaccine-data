@@ -133,6 +133,7 @@ export const brands = [
   { key: "Janssen", label: "Janssen" },
   { key: "Pfizer Pediatrico", label: "Pediatric Pfizer" },
   { key: "Novavax", label: "Novavax" },
+  { key: "Sanofi", label: "Sanofi" },
 ];
 
 export const ageRangePeople = {
@@ -152,6 +153,8 @@ export const anagraphicKeys = [
   "d2",
   "db1",
   "db2",
+  "dbn3",
+  "dpi",
   "eta",
   "people",
   "totale",
