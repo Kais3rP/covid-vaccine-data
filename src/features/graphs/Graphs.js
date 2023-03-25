@@ -21,7 +21,7 @@ const Graphs = () => {
         Comp2={() => <TotalDosesAdministered type="fourthDose" />}
       />
       <SummaryGraph />
-      {/* <WeeklyGraph /> */}
+      <WeeklyGraph />
       <AnagraphicGraph />
       <DeliveredGraph />
       <AdministrationSites />
