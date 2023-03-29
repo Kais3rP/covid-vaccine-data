@@ -5,6 +5,7 @@ import App from "./App";
 import { store } from "./app/store";
 import { Provider } from "react-redux";
 import * as serviceWorker from "./serviceWorker";
+import { ErrorBoundary } from "./components/reusable/ErrorBoundary";
 /* SUPPRESS console.log */
 
 if (process.env.NODE_ENV === "production") window.console.log = () => {};
@@ -15,7 +16,9 @@ const root = createRoot(container); // createRoot(container!) if you use TypeScr
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
     </Provider>
   </React.StrictMode>
 );
